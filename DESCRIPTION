@@ -1,0 +1,28 @@
+Package: voi.remote
+Title: voi_remote
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "Christopher",
+           family = "Jackson",
+           role = c("aut", "cre"),
+           email = "chris.jackson@mrc-bsu.cam.ac.uk"),
+	   person(given = "Anna",
+	   family = "Heath",
+	   role = c("aut"), 
+	   email = "anna.heath@sickkids.ca"),
+	   person(given = "Gianluca",
+	   family = "Baio",
+	   role = c("ctb"), 
+	   email = "g.baio@ucl.ac.uk"))
+Description: A remote package that runs Christopher Jackson's voi on peermodels server.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    peermodels
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
