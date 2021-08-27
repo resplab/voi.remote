@@ -1,12 +1,31 @@
-#' Title
+#' Calculate the expected value of perfect information from a decision model
 #'
-#' @param outputs
-#' @param nsim
+#' @param outputs This could take one of two forms
+#'
+#'   "net benefit" form: a matrix or data frame of samples from the uncertainty
+#'   distribution of the expected net benefit.  The number of rows should equal
+#'   the number of samples, and the number of columns should equal the number
+#'   of decision options.
+#'
+#'   "cost-effectiveness analysis" form: a list with the following named
+#'   components:
+#'
+#' @param nsim Number of simulations from the model to use for calculating
+#'   EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
+#'   \code{outputs} are used.
 #'
 #' @return
 #' @export
 #'
 #' @examples
+#' set.seed(1)
+#' nsam <- 10000
+#' inputs <- data.frame(p1 = rnorm(nsam, 1, 1),
+#'                      p2 = rnorm(nsam, 0, 2))
+#' outputs_nb <- data.frame(t1 = 0,
+#' t2 = inputs$p1 - inputs$p2)
+#' nsim <- NULL
+#' evpi.remote(outputs_nb, nsim)
 evpi.remote <- function(outputs, nsim) {
   model_input <- list(outputs=outputs, nsim=nsim, func='evpi')
   res <- peermodels::model_run(model_name='voi', model_input, api_key='aaHYJJb4hcrmBYY3')
