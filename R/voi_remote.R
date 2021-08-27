@@ -51,7 +51,7 @@ evpi.remote <- function(outputs, nsim) {
 #' @examples
 evppi.remote <- function(outputs, inputs, pars, se, B, nsim, verbose, method, ...) {
   model_input <- list(outputs=outputs, inputs=inputs, pars=pars, se=se, B=B, nsim=nsim, verbose=verbose, func='evppi', method=method, etc=...)
-  res <- peermodels::model_run(model_name='voi', model_input, api_key='aaHYJJb4hcrmBYY3')
+  res <- peermodels::model_run(model_name='voi', model_input=model_input, api_key='aaHYJJb4hcrmBYY3')
   return(res)
 }
 
