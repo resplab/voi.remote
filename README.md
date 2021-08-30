@@ -12,12 +12,13 @@ The goal of voi.remote is to …
 
 ## Installation
 
-You can install the released version of voi.remote from
-[CRAN](https://CRAN.R-project.org) with:
+You can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
-install.packages("voi.remote")
+# install.packages("devtools")
+devtools::install_github("resplab/voi.remote")
 ```
+
 
 ## Example
 
