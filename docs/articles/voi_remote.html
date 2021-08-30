@@ -161,10 +161,9 @@
 <a href="#using-the-voi-package-to-calculate-evpi" class="anchor"></a>Using the <code>voi</code> package to calculate EVPI</h4>
 <p>The <code>voi</code> package contains a simple function <code>evpi</code> to compute the EVPI using the above procedure. The function automatically detects whether your outputs are in net benefit or cost-effectiveness format.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">peermodels</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">voi.remote</span><span class="op">)</span></code></pre></div>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, func="evpi"))
-model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_cea, func="evpi"))</code></pre>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">voi.remote</span><span class="op">)</span></code></pre></div>
+<pre><code><a href="../reference/evpi.remote.html">evpi.remote(outputs_nb)
+evpi.remote(outputs_cea)</a></code></pre>
 <p>Note the result is slightly different from <code>evpi1</code>, since it uses the sample-based estimate of 1.0018431 of the expected net benefit under current information, rather than the known expectation of 1.</p>
 </div>
 <div id="analytic-computation" class="section level4">
@@ -199,20 +198,12 @@ model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(out
 <a href="#invoking-the-evppi-function-" class="anchor"></a>Invoking the <code>evppi</code> function.</h3>
 <p>To call <code>evppi</code>, supply a sample of outputs and inputs (in the same form as defined above) in the first two arguments. The parameter or parameters of interest (whose EVPPI is desired) is supplied in the <code>"pars"</code> argument. This can be expressed in various ways.</p>
 <p><strong>(a) As a vector</strong>. The joint EVPPI is computed for all parameters in this vector. If the vector has more than one element, then the function returns the expected value of perfect information on all of these parameters simultaneously (described as the “multiparameter” EVPPI by <a href="https://doi.org/10.1177/0272989X13505910">Strong et al.</a>).</p>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_cea, inputs = inputs, pars="p1", func="evppi"))
-model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, pars=c("p1","p2"), func="evppi"))</code></pre>
-<p>or</p>
-<pre><code><a href="../reference/evpi.remote.html">evpi.remote(outputs_nb)
-evpi.remote(outputs_cea)</a></code></pre>
-<p><strong>(b) As a list</strong>. A separate EVPPI is computed for each element of the list. In the second example below, this is the EVPPI of <span class="math inline">\(p_1\)</span>, followed by the multiparameter EVPPI of <span class="math inline">\((p_1,p_2)\)</span>. Note that the multiparameter EVPPI is the theoretically same as the EVPI if, as in this case, the vector includes all of the parameters in the model (though note the difference from EVPI estimates above due to the different computational method).</p>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, pars=list("p1","p2"), func="evppi"))
-model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, pars=list("p1",c("p1","p2")), func="evppi"))</code></pre>
-<p>or</p>
 <pre><code><a href="../reference/evppi.remote.html">evppi.remote(outputs_nb, inputs, pars="p1")
 evppi.remote(outputs_nb, inputs, pars=c("p1","p2"))</a></code></pre>
+<p><strong>(b) As a list</strong>. A separate EVPPI is computed for each element of the list. In the second example below, this is the EVPPI of <span class="math inline">\(p_1\)</span>, followed by the multiparameter EVPPI of <span class="math inline">\((p_1,p_2)\)</span>. Note that the multiparameter EVPPI is the theoretically same as the EVPI if, as in this case, the vector includes all of the parameters in the model (though note the difference from EVPI estimates above due to the different computational method).</p>
+<pre><code><a href="../reference/evppi.remote.html">evppi.remote(outputs_nb, inputs, pars=list("p1",c("p1","p2")))
+evppi.remote(outputs_cea, inputs, pars=list("p1",c("p1","p2")))</a></code></pre>
 <p>The <code>evppi</code> function returns a data frame with columns indicating the parameter (or parameters), and the corresponding EVPPI. If the outputs are in cost-effectiveness analysis format, then a separate column is returned indicating the willingness-to-pay.</p>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_cea, inputs = inputs, pars=list("p1",c("p1","p2")), func="evppi"))</code></pre>
-<p>or</p>
 <pre><code><a href="../reference/evppi.remote.html">evppi.remote(outputs_cea, inputs, pars=list("p1",c("p1","p2")))</a></code></pre>
 </div>
 <div id="changing-the-default-calculation-method" class="section level3">
@@ -223,23 +214,19 @@ evppi.remote(outputs_nb, inputs, pars=c("p1","p2"))</a></code></pre>
 <h4 class="hasAnchor">
 <a href="#gaussian-process-regression" class="anchor"></a>Gaussian process regression</h4>
 <p>(from <a href="https://doi.org/10.1177/0272989X13505910">Strong et al. (2013)</a>). The number of random samples to use in this computation can be changed using the <code>nsim</code> argument, which can be useful for this method as it can be prohibitive for large samples. Here the sample of 10000 is reduced to 1000.</p>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", nsim=1000, func="evppi", method="gp"))</code></pre>
-<p>or</p>
 <pre><code><a href="../reference/evppi.remote.html">evppi.remote(outputs_nb, inputs, pars="p1", method="gp", nsim=1000)</a></code></pre>
 </div>
 <div id="multivariate-adaptive-regression-splines" class="section level4">
 <h4 class="hasAnchor">
 <a href="#multivariate-adaptive-regression-splines" class="anchor"></a>Multivariate adaptive regression splines</h4>
 <p>This is a variant of generalized additive models based on linear splines, which uses a package called <a href="https://CRAN.R-project.org/package=earth">earth</a>.</p>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", func="evppi", method="earth"))</code></pre>
-<p>or</p>
 <pre><code><a href="../reference/evppi.remote.html">evppi.remote(outputs_nb, inputs, pars="p1", method="earth")</a></code></pre>
 </div>
 <div id="inla-method" class="section level4">
 <h4 class="hasAnchor">
 <a href="#inla-method" class="anchor"></a>INLA method</h4>
 <p>(from <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983">Heath et al.</a>, <a href="https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf">Baio et al.</a> ). This needs the following extra packages to be installed, using the following commands. (As of writing, the <code>ldr</code> package is not on CRAN due to lack of maintenance, but the archived version has been used without any noticeable problem.)</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'INLA'</span>, repos<span class="op">=</span><span class="st">'https://inla.r-inla-download.org/R/stable'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'splancs'</span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_version</a></span><span class="op">(</span><span class="st">"ldr"</span>, version <span class="op">=</span> <span class="st">"1.3.3"</span>, repos <span class="op">=</span> <span class="st">"http://cran.uk.r-project.org"</span><span class="op">)</span></code></pre></div>
@@ -251,14 +238,10 @@ evppi.remote(outputs_nb, inputs, pars=c("p1","p2"))</a></code></pre>
 <a href="#tuning-the-generalized-additive-model-method" class="anchor"></a>Tuning the generalized additive model method</h4>
 <p>The generalized additive model formula can be changed with the <code>gam_formula</code> argument. This is supplied to the <code>gam</code> function from the <code>mgcv</code> package. The default formula uses a tensor product, and if there are more than four parameters, then a basis dimension of 4 terms per parameter is assumed.<br>
 A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficiently flexible to represent how the outputs depend on the inputs, but can also be estimated in practice, given the complexity of the GAM and the number of random samples available to fit it to.</p>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, pars=c("p1","p2"), gam_formula="s(p1) + s(p2)", func="evppi", method="gam"))</code></pre>
-<p>or</p>
 <pre><code><a href="../reference/evppi.remote.html">evppi.remote(outputs_nb, inputs, pars=c("p1","p2"), method="gam", gam_formula="s(p1) + s(p2)")
 </a></code></pre>
 <p>Note that if there are spaces in the variable names in <code>inputs</code> and <code>pars</code>, then for <code>gam_formula</code> the spaces should be converted to underscores, or else an <code>"unexpected symbol"</code> error will be returned from <code>gam</code>.</p>
 <p>A standard error for the EVPPI estimates from the GAM method, resulting from uncertainty about the parameters of the GAM approximation, can be obtained by calling <code>evppi</code> with <code>se=TRUE</code>. This uses <span class="math inline">\(B\)</span> samples from the distribution of the GAM parameters, thus the standard error can be estimated more accurately by increasing B.</p>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", se=TRUE, B=100, func="evppi"))</code></pre>
-<p>or</p>
 <pre><code><a href="../reference/evppi.remote.html">evppi.remote(outputs_nb, inputs, pars="p1", se=TRUE, B=100)</a></code></pre>
 </div>
 <div id="single-parameter-methods" class="section level4">
@@ -266,12 +249,8 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <a href="#single-parameter-methods" class="anchor"></a>Single-parameter methods</h4>
 <p>These are only applicable for computing the EVPPI for a single scalar parameter. They are supplied in the package for technical completeness, but for single-parameter EVPPI we have found it to be sufficiently reliable to use the default GAM method, which requires less tuning than these methods.</p>
 <p>The method of <a href="https://journals.sagepub.com/doi/full/10.1177/0272989X12465123">Strong and Oakley</a>:</p>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", etc = list(n.blocks=20), func="evppi", method="so"))</code></pre>
-<p>or</p>
 <pre><code><a href="../reference/evppi.remote.html">evppi.remote(outputs_nb, inputs, pars="p1", n.blocks=20, method="so")</a></code></pre>
 <p>The method of <a href="https://doi.org/10.1016/j.jval.2012.10.018">Sadatsafavi et al.</a>:</p>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", func="evppi", method="sal"))</code></pre>
-<p>or</p>
 <pre><code><a href="../reference/evppi.remote.html">evppi.remote(outputs_nb, inputs, pars="p1", method="sal")</a></code></pre>
 </div>
 </div>
@@ -285,12 +264,12 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <h4 class="hasAnchor">
 <a href="#model-evaluation-function" class="anchor"></a>Model evaluation function</h4>
 <p>This function evaluates the decision-analytic model for specific parameter values. This must have one argument for each parameter. The return value can be in either a “net benefit” form or a “costs and effects” form. The “net benefit” form is a vector giving the net benefit for each decision option.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_fn_nb</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span><span class="op">{</span> 
   <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">p1</span> <span class="op">-</span> <span class="va">p2</span><span class="op">)</span> 
 <span class="op">}</span></code></pre></div>
 <p>The “costs and effects” form is a matrix with two rows, and one column for each decision option. The rows gives the effects and costs respectively for each decision option. If they have names <code>"e"</code> and <code>"c"</code> then these are assumed to identify the effects and costs. Otherwise the first row is assumed to contain the effects, and the second the costs.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_fn_cea</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span><span class="op">{</span> 
   <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span>e <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">p1</span><span class="op">)</span>, 
         c <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span> 
@@ -300,7 +279,7 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <h4 class="hasAnchor">
 <a href="#parameter-simulation-function" class="anchor"></a>Parameter simulation function</h4>
 <p>This function generates a random sample of <span class="math inline">\(n\)</span> values from the current (joint) uncertainty distribution of the model parameters. This returns a data frame with <span class="math inline">\(n\)</span> rows and one named column for each parameter.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">par_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">{</span>
   <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>p1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,
              p2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
@@ -311,8 +290,6 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <a href="#invoking-evppi_mc" class="anchor"></a>Invoking <code>evppi_mc</code>
 </h4>
 <p>These functions are then supplied as arguments to <code>evppi_mc</code>, along with the number of samples to draw in the inner and outer loops. 1000 inner samples and 100 outer samples give a reasonable EVPPI estimate in this example, but many more samples may be required for the result to converge to the EVPPI in more complex models.</p>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(model_fn = model_fn_nb, par_fn = par_fn, pars="p1", func="evppi_mc", ninner=1000, nouter=100))</code></pre>
-<p>or</p>
 <pre><code><a href="../reference/evppi_mc.remote.html">evppi_mc.remote(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)</a></code></pre>
 </div>
 <div id="accounting-for-parameter-correlation" class="section level4">
@@ -321,13 +298,6 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <p>We may want the EVPPI for a parameter which is correlated with another parameter. To account for this correlation, <code>par_fn</code> requires an extra argument or arguments to enable a sample to be drawn from the appropriate conditional distribution. For example, the function below specifies a bivariate normal distribution for <span class="math inline">\((p_1,p_2)\)</span> where a correlation is induced by defining <span class="math inline">\(E(p_2|p_1) = p_1\)</span>. To draw a sample from the conditional distribution of <span class="math inline">\(p_2\)</span> given <span class="math inline">\(p_1=2\)</span>, for example, call <code>par_fn_corr(1, p1=2)$p2</code>.</p>
 <p>If the argument <code>p1</code> is not supplied, then the function should return a sample from the joint distribution marginalised over <span class="math inline">\(p_1\)</span>, as in this case where if we do not supply <code>p1</code> then a random <code>p1</code> is drawn followed by <code>p2|p1</code>.</p>
 <p>A function of this form should then be passed to <code>evppi_mc</code> if the parameters are correlated. This allows <code>evppi_mc</code> to draw from the appropriate distribution in the inner loop.</p>
-<pre><code>par_fn_corr &lt;- function(n, p1=NULL){
-  p1_new &lt;- if (is.null(p1)) rnorm(n, 1, 1) else p1
-  data.frame(p1 = p1_new,
-             p2 = rnorm(n, p1_new, 2))
-}
-model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(model_fn = model_fn_nb, par_fn = par_fn_corr, pars="p1", func="evppi_mc", ninner=1000, nouter=100))</code></pre>
-<p>or</p>
 <pre><code>par_fn_corr &lt;- function(n, p1=NULL){
   p1_new &lt;- if (is.null(p1)) rnorm(n, 1, 1) else p1
   data.frame(p1 = p1_new,
@@ -366,24 +336,12 @@ evppi_mc.remote(model_fn_nb, par_fn_corr, pars="p1", ninner=1000, nouter=100)</c
 }
 
 set.seed(1)
-model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, datagen_fn = datagen_normal, n=c(10,100,1000), func="evsi"))</code></pre>
-<p>or</p>
-<pre><code>datagen_normal &lt;- function(inputs, n=100, sd=1){
-  data.frame(xbar = rnorm(n = nrow(inputs),
-                          mean = inputs[,"p1"],
-                          sd = sd / sqrt(n)))
-}
-
-set.seed(1)
 evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, n=c(10,100,1000))</code></pre>
 </div>
 <div id="built-in-study-designs" class="section level3">
 <h3 class="hasAnchor">
 <a href="#built-in-study-designs" class="anchor"></a>Built-in study designs</h3>
 <p>The function <code>datagen_normal</code> is also included in the <code>voi</code> package as a built-in study design. To invoke the <code>evsi</code> function for a built-in study design, we have to supply the name of the design (in this case <code>"normal_known"</code>) and the name of the parameter or parameters (corresponding to a column of “inputs”) which is estimated by the study data.</p>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", study = "normal_known", n=c(100,1000), func="evsi"))
-model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_cea, inputs = inputs, datagen_fn = datagen_normal, n=c(10,100,1000), func="evsi"))</code></pre>
-<p>or</p>
 <pre><code><a href="../reference/evsi.remote.html">evsi.remote(outputs_nb, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
 evsi.remote(outputs_cea, inputs, study = "normal_known", n=c(100,1000), pars = "p1")</a></code></pre>
 <p>The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling <code>evsi</code> with an <code>aux_pars</code> argument, e.g. <code>evsi(..., aux_pars=list(sd=2), ...)</code>.</p>
@@ -405,18 +363,9 @@ evsi.remote(outputs_cea, inputs, study = "normal_known", n=c(100,1000), pars = "
   dnorm(Y[,"xbar"], mu, sig/sqrt(n))
 }
 
-model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", datagen_fn = datagen_normal, likelihood = likelihood_normal, n=100, func="evsi", method="is", nsim=1000))</code></pre>
-<p>or</p>
-<pre><code>likelihood_normal &lt;- function(Y, inputs, n=100, sig=1){
-  mu &lt;- inputs[,"p1"]
-  dnorm(Y[,"xbar"], mu, sig/sqrt(n))
-}
-
 evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, likelihood = likelihood_normal, 
             n=100, pars = "p1", method="is", nsim=1000)</code></pre>
 <p>Again, this study model is available as a built-in study design, so instead of writing a user-defined likelihood and data generation function, <code>evsi</code> can also be invoked with <code>study="normal_known", method="is"</code>.</p>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1",study = "normal_known", n=100, func="evsi", method="is", nsim=1000))</code></pre>
-<p>or</p>
 <pre><code><a href="../reference/evsi.remote.html">evsi.remote(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1", method="is", nsim=1000)</a></code></pre>
 </div>
 <div id="further-work" class="section level3">
@@ -431,12 +380,12 @@ evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, likelihood = likeli
 <p>Suppose that the aim of the analysis is to get a precise estimate of a quantity, rather than to make an explicit decision between policies. VoI methodology can still be used to determine which uncertain parameters the estimate is most sensitive to (EVPPI) or the improvements in precision expected from new data (EVSI). The expected value of information is the expected <em>reduction in variance</em> of the quantity of interest given the further information.</p>
 <p>We illustrate with an example. Suppose we want to estimate the prevalence of an infection. There are two sources of information. We have survey data which we think is biased, so that the true infection rate is higher than the rate of infection observed in the survey. We then have an expert judgement about the extent of bias in the data, and uncertainty associated with this.</p>
 <p>Firstly, suppose the survey observed 100 people and 5 of them were infected. Using a vague Beta(0,0) prior (flat on the logit scale), the posterior distribution of the survey infection rate <span class="math inline">\(p_1\)</span> is a Beta(5,95). We draw a random sample from this.</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html">rbeta</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">5</span>, <span class="fl">95</span><span class="op">)</span></code></pre></div>
 <p>Secondly, we guess that the true risk of being infected is twice the risk in the survey population, but we are uncertain about this relative risk. We might approximate our belief by placing a normal prior distribution on the log odds ratio <span class="math inline">\(\beta\)</span>, with a mean designed to reflect the doubled relative risk, and a variance that is high but concentrates the relative risk on positive values. Hence the true infection probability <span class="math inline">\(p_2\)</span> is a function of the two parameters <span class="math inline">\(p_1\)</span> and <span class="math inline">\(\beta\)</span>:</p>
 <p><span class="math display">\[p_2 = expit(logit(p_1) + \beta)\]</span>.</p>
 <p>We draw random samples from the current belief distributions of <span class="math inline">\(\beta\)</span> and <span class="math inline">\(p_2\)</span>, and then graphically compare the distributions of the infection probability <span class="math inline">\(p_1\)</span> in the survey data (black) and the true infection probability <span class="math inline">\(p_2\)</span> (red).</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">0.8</span>, <span class="fl">0.4</span><span class="op">)</span>
 <span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">qlogis</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span> <span class="op">+</span> <span class="va">beta</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/density.html">density</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span>, lwd<span class="op">=</span><span class="fl">2</span>, xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>, main<span class="op">=</span><span class="st">""</span><span class="op">)</span>
@@ -449,7 +398,7 @@ evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, likelihood = likeli
 <h3 class="hasAnchor">
 <a href="#evpi-and-evppi-for-estimation" class="anchor"></a>EVPI and EVPPI for estimation</h3>
 <p>The EVPI is trivially <span class="math inline">\(var(p_2)\)</span>, the variance under current information, which we can compute from the sample as</p>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.003590716</code></pre>
 <p>A more interesting quantity is the EVPPI for a parameter. It describes the expected reduction in variance given perfect knowledge of a particular parameter. In this example, we compute the EVPPI for <span class="math inline">\(p_1\)</span> and <span class="math inline">\(\beta\)</span>, respectively, defined as</p>
@@ -470,7 +419,7 @@ sqrt(var(p2) - evppi_p1$evppi)</a></code></pre>
 <a href="#how-regression-based-evppi-estimation-works" class="anchor"></a>How regression-based EVPPI estimation works</h3>
 <p>EVPPI is estimated here by <em>nonparametric regression</em> of the output on the input. Recall that the method of <a href="https://doi.org/10.1177/0272989X13505910">Strong et al. (2013)</a> was used in <code>evppi</code> for models with decisions. <a href="https://doi.org/10.1080/01621459.2018.1562932">Jackson et al. 2019</a> showed how this method applied in a wider class of problems, including models for estimation.</p>
 <p>To estimate the expected reduction in variance in <span class="math inline">\(p_2\)</span>, given knowledge of <span class="math inline">\(p_1\)</span>, the <code>evppivar</code> function fits a regression model with <code>p2</code> as the outcome, and <code>p1</code> as the single predictor. A generalized additive model based on splines is fitted using the <code>gam</code> function from the <code>mgcv</code> package.</p>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">p1</span>, y<span class="op">=</span><span class="va">p2</span>, pch<span class="op">=</span><span class="st">"."</span><span class="op">)</span>
 <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu">mgcv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">p2</span> <span class="op">~</span> <span class="fu">te</span><span class="op">(</span><span class="va">p1</span>, bs<span class="op">=</span><span class="st">"cr"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">p1fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>
@@ -494,14 +443,9 @@ var(p2) - var(p1res)</code></pre>
 <li><p><code>study="binary"</code> indicates that the proposed study consists of a binary outcome observed from <code>n</code> individuals.<br></p></li>
 <li><p><code>pars="p1"</code> indicates which input parameter is informed by the study, in other words, which parameter is assumed to generate the study data.</p></li>
 </ul>
-<pre><code>model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = p2, inputs = inputs, study = "binary", pars = "p1", func="evsivar", n=c(100,1000,10000)))</code></pre>
-<p>or</p>
 <pre><code><a href="../reference/evsivar.remote.html">evsivar.remote(p2, inputs, study = "binary", pars="p1", n=c(100,1000,10000))</a></code></pre>
 <p>As the proposed sample sizes increase, the expected value of sample information informing <span class="math inline">\(p_1\)</span> converges to the EVPPI, the expected value of perfect information about <span class="math inline">\(p_1\)</span>.</p>
 <p>Alternatively, suppose we were able to collect information about the <em>unbiased</em> population, whose infection prevalence is <span class="math inline">\(p_2\)</span>. That is, suppose we surveyed <span class="math inline">\(n\)</span> individuals, each with a binary infection outcome generated with probability <span class="math inline">\(p_2\)</span>. In this case, we can compute the EVSI by using <code>evsivar</code> with the model <code>inputs</code> defined to equal the model outputs, as follows:</p>
-<pre><code>inputs_p2 = data.frame(p2 = p2)
-model_run(model_name="voi", api_key=&lt;your_api_key&gt;, model_input = list(outputs = p2, inputs = inputs_p2, study = "binary", pars = "p1", func="evsivar", n=c(100,1000,10000)))</code></pre>
-<p>or</p>
 <pre><code>inputs_p2 = data.frame(p2 = p2)
 evsivar.remote(p2, inputs=inputs_p2, study = "binary", pars="p2", n=c(100, 1000, 10000))</code></pre>
 <p>The unbiased data is clearly more valuable than the biased data, with double the variance reductions from biased data of the same sample size. As the sample size increases, the value converges to the EVPI, hence (in the asymptote) we will eliminate all uncertainty about our quantity of interest <span class="math inline">\(p_2\)</span>.</p>
