@@ -2,16 +2,94 @@
 % Please edit documentation in R/voi_remote.R
 \name{evppi_mc.remote}
 \alias{evppi_mc.remote}
-\title{Title}
+\title{Traditional two-level Monte Carlo estimator of EVPPI.}
 \usage{
 evppi_mc.remote(model_fn, par_fn, pars, nouter, ninner, wtp, mfargs, verbose)
 }
 \arguments{
-\item{verbose}{}
+\item{model_fn}{A function to evaluate a decision-analytic model at a given
+set of parameters. This should either return:
+
+(net benefit format) a vector giving the net benefit for each decision
+option, or
+
+(cost-effectiveness analysis format) a matrix or data frame with two rows,
+and one column for each decision option.  If the rows have names
+\code{"e"} and \code{"c"} then these are assumed to be the effects and
+costs respectively.
+
+Otherwise, the first row is assumed to be the effects, and the second the
+costs.}
+
+\item{par_fn}{A function to generate a random sample of values for the
+parameters of \code{model_fn}. This should return a matrix or a data frame
+with named columns matching the arguments of \code{model_fn}.
+
+If any required arguments to \code{model_fn} are not supplied in this
+return value, then \code{evppi_mc} looks for them in the list supplied as
+the \code{mfargs} argument.
+
+If any required arguments are not found in the results of \code{par_fn} or
+\code{mfargs}, and if \code{model_fn} defines default values for those
+arguments, then those default values are used.
+
+The first argument of \code{par_fn} should be an integer \code{n} denoting
+the number of random values to draw for each parameter.  The object
+returned by \code{par_fn} should then have \code{n} rows, and one column
+for each parameter. If one value is drawn, then \code{par_fn} is also
+allowed to return a vector, but this should still be named.
+
+The parameters may be correlated.  If we wish to compute the EVPPI for a
+parameter which is correlated with a different parameter q, then \code{par_fn}
+must have an argument with the name of that parameter.  If that argument
+is set to a fixed value, then \code{par_fn} should return a sample drawn
+conditionally on that value.  If that argument is not supplied, then
+\code{par_fn} must return a sample drawn from the marginal distribution. See
+the vignette for an example.}
+
+\item{pars}{A character vector giving the parameters of interest, for which
+the EVPPI is required.   This should correspond to an explicit argument to
+\code{model_fn}.
+
+The parameters of interest are assumed to have uncertainty distributions
+that are independent of those of the other parameters.}
+
+\item{nouter}{Number of outer samples}
+
+\item{ninner}{Number of inner samples}
+
+\item{wtp}{Vector of willingness-to-pay values.  Only used if
+\code{model_fn} is in cost-effectiveness analyis format.}
+
+\item{mfargs}{Named list of additional arguments to supply to
+\code{model_fn}.}
+
+\item{verbose}{Set to \code{TRUE} to print some additional messages to
+help with debugging.}
 }
 \value{
 
 }
 \description{
-Title
+Traditional two-level Monte Carlo estimator of the expected value of partial
+perfect information from a decision-analytic model.  Only useful in the
+simplest of examples.  For realistically complex examples, the methods
+implemented in the \code{\link{evppi}} function will usually be preferred.
+}
+\examples{
+model_fn_nb <- function(p1, p2) {
+  c(0, p1 - p2)
+}
+par_fn <- function(n) {
+  data.frame(
+    p1 = rnorm(n, 1, 1),
+    p2 = rnorm(n, 0, 2)
+  )
+}
+pars <- "p1"
+ninner <- 1000
+nouter <- 100
+wtp <- NULL
+mfargs <- NULL
+evppi_mc.remote(model_fn = model_fn, par_fn = par_fn, pars = pars, nouter = nouter, ninner = ninner, wtp = wtp, mfargs = mfargs)
 }

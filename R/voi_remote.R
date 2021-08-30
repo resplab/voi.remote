@@ -44,9 +44,8 @@
 #'   t1 = 0,
 #'   t2 = inputs$p1 - inputs$p2
 #' )
-#' nsim <- NULL
-#' evpi.remote(outputs = outputs_nb, nsim = nsim)
-evpi.remote <- function(outputs, nsim) {
+#' evpi.remote(outputs = outputs_nb)
+evpi.remote <- function(outputs, nsim = NULL) {
   model_input <- list(outputs = outputs,
                       nsim = nsim,
                       func = "evpi")
@@ -146,30 +145,17 @@ evpi.remote <- function(outputs, nsim) {
 #'   t1 = 0,
 #'   t2 = inputs$p1 - inputs$p2
 #' )
-#' nsim <- NULL
-#' pars <- "p1"
-#' nsim <- NULL
-#' method <- NULL
-#' evppi.remote(outputs = outputs_nb, inputs = inputs, pars = pars, nsim = nsim, method = method)
+#' evppi.remote(outputs = outputs_nb, inputs = inputs)
 evppi.remote <-
   function(outputs,
            inputs,
-           pars,
-           se,
-           B,
-           nsim,
-           verbose,
-           method,
+           pars = NULL,
+           se = FALSE,
+           B = 500,
+           nsim = NULL,
+           verbose = FALSE,
+           method = NULL,
            ...) {
-    if (is.null(se)) {
-      se <- FALSE
-    }
-    if (is.null(B)) {
-      B <- 500
-    }
-    if (is.null(verbose)) {
-      verbose <- FALSE
-    }
     model_input <-
       list(
         outputs = outputs,
@@ -275,21 +261,16 @@ evppi.remote <-
 #' pars <- "p1"
 #' ninner <- 1000
 #' nouter <- 100
-#' wtp <- NULL
-#' mfargs <- NULL
-#' evppi_mc.remote(model_fn = model_fn, par_fn = par_fn, pars = pars, nouter = nouter, ninner = ninner, wtp = wtp, mfargs = mfargs)
+#' evppi_mc.remote(model_fn = model_fn, par_fn = par_fn, pars = pars, nouter = nouter, ninner = ninner)
 evppi_mc.remote <-
   function(model_fn,
            par_fn,
            pars,
            nouter,
            ninner,
-           wtp,
-           mfargs,
-           verbose) {
-    if (is.null(verbose)) {
-      verbose <- FALSE
-    }
+           wtp = NULL,
+           mfargs = NULL,
+           verbose = FALSE) {
     model_input <-
       list(
         model_fn = model_fn,
@@ -458,47 +439,27 @@ evppi_mc.remote <-
 #'                            mean = inputs[,"p1"],
 #'                            sd = sd / sqrt(n)))
 #'}
-#' study <- NULL
 #' pars <- "p1"
 #' n <- c(10,100,1000)
-#' aux_pars <- NULL
-#' method <-  NULL
-#' likelihood <- NULL
-#' analysis_model <- NULL
-#' analysis_options <- NULL
-#' decision_model <- NULL
-#' nsim <- NULL
-#' evsi.remote(outputs = outputs_nb, inputs = inputs, study = study, datagen_fn = datagen_normal, pars = pars, n = n, method = method, likelihood = likelihood, analysis_model = analysis_model, analysis_options = analysis_options, decision_model = decision_model, nsim = nsim)
+#' evsi.remote(outputs = outputs_nb, inputs = inputs, datagen_fn = datagen_normal, pars = pars, n = n)
 #'
 evsi.remote <-
   function(outputs,
            inputs,
-           study,
-           datagen_fn,
-           pars,
-           n,
-           likelihood,
-           analysis_model,
-           analysis_options,
-           decision_model,
-           Q,
-           npreg_method,
-           nsim,
-           verbose,
-           method,
+           study = NULL,
+           datagen_fn = NULL,
+           pars = NULL,
+           n = 100,
+           likelihood = NULL,
+           analysis_model = NULL,
+           analysis_options = NULL,
+           decision_model = NULL,
+           Q = 30,
+           npreg_method = "gam",
+           nsim = NULL,
+           verbose = FALSE,
+           method = NULL,
            ...) {
-    if (is.null(n)) {
-      n <- 100
-    }
-    if (is.null(Q)) {
-      Q <- 30
-    }
-    if (is.null(npreg_method)) {
-      npreg_method <- "gam"
-    }
-    if (is.null(verbose)) {
-      verbose <- FALSE
-    }
     model_input <-
       list(
         outputs = outputs,
@@ -688,19 +649,19 @@ evsi.remote <-
 evsivar.remote <-
   function(outputs,
            inputs,
-           study,
-           datagen_fn,
-           pars,
-           n,
-           likelihood,
-           analysis_model,
-           analysis_options,
-           decision_model,
-           Q,
-           npreg_method,
-           nsim,
-           verbose,
-           method,
+           study = NULL,
+           datagen_fn = NULL,
+           pars = NULL,
+           n = 100,
+           likelihood = NULL,
+           analysis_model = NULL,
+           analysis_options = NULL,
+           decision_model = NULL,
+           Q = 30,
+           npreg_method = "gam",
+           nsim = NULL,
+           verbose = TRUE,
+           method = NULL,
            ...) {
     model_input <-
       list(

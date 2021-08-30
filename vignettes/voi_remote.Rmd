@@ -112,11 +112,12 @@ The `voi` package contains a simple function `evpi` to compute the EVPI using th
 
 ```{r}
 library(peermodels)
+library(voi.remote)
 ```
 
 ```
-# model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, func="evpi"))
-# model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_cea, func="evpi"))
+model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, func="evpi"))
+model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_cea, func="evpi"))
 ```
 
 Note the result is slightly different from `evpi1`, since it uses the sample-based estimate of `r max(colMeans(outputs_nb))` of the expected net benefit under current information, rather than the known expectation of 1.
@@ -164,6 +165,11 @@ To call `evppi`, supply a sample of outputs and inputs (in the same form as defi
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_cea, inputs = inputs, pars="p1", func="evppi"))
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars=c("p1","p2"), func="evppi"))
 ```
+or
+```
+evpi.remote(outputs_nb)
+evpi.remote(outputs_cea)
+```
 
 **(b) As a list**. A separate EVPPI is computed for each element of the list. In the second example below, this is the EVPPI of $p_1$, followed by the multiparameter EVPPI of $(p_1,p_2)$. Note that the multiparameter EVPPI is the theoretically same as the EVPI if, as in this case, the vector includes all of the parameters in the model (though note the difference from EVPI estimates above due to the different computational method).
 
@@ -171,11 +177,20 @@ model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs =
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars=list("p1","p2"), func="evppi"))
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars=list("p1",c("p1","p2")), func="evppi"))
 ```
+or
+```
+evppi.remote(outputs_nb, inputs, pars="p1")
+evppi.remote(outputs_nb, inputs, pars=c("p1","p2"))
+```
 
 The `evppi` function returns a data frame with columns indicating the parameter (or parameters), and the corresponding EVPPI. If the outputs are in cost-effectiveness analysis format, then a separate column is returned indicating the willingness-to-pay.
 
 ```
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_cea, inputs = inputs, pars=list("p1",c("p1","p2")), func="evppi"))
+```
+or
+```
+evppi.remote(outputs_cea, inputs, pars=list("p1",c("p1","p2")))
 ```
 
 ### Changing the default calculation method
@@ -189,6 +204,10 @@ The method can be changed by supplying the `method` argument to `evppi`. Some me
 ```
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", nsim=1000, func="evppi", method="gp"))
 ```
+or
+```
+evppi.remote(outputs_nb, inputs, pars="p1", method="gp", nsim=1000)
+```
 
 #### Multivariate adaptive regression splines
 
@@ -196,6 +215,10 @@ This is a variant of generalized additive models based on linear splines, which 
 
 ```
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", func="evppi", method="earth"))
+```
+or
+```
+evppi.remote(outputs_nb, inputs, pars="p1", method="earth")
 ```
 
 #### INLA method
@@ -222,6 +245,11 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 ```
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars=c("p1","p2"), gam_formula="s(p1) + s(p2)", func="evppi", method="gam"))
 ```
+or
+```
+evppi.remote(outputs_nb, inputs, pars=c("p1","p2"), method="gam", gam_formula="s(p1) + s(p2)")
+
+```
 
 Note that if there are spaces in the variable names in `inputs` and `pars`, then for `gam_formula` the spaces should be converted to underscores, or else an `"unexpected symbol"` error will be returned from `gam`.
 
@@ -229,6 +257,10 @@ A standard error for the EVPPI estimates from the GAM method, resulting from unc
 
 ```
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", se=TRUE, B=100, func="evppi"))
+```
+or
+```
+evppi.remote(outputs_nb, inputs, pars="p1", se=TRUE, B=100)
 ```
 
 #### Single-parameter methods
@@ -240,11 +272,19 @@ The method of [Strong and Oakley](https://journals.sagepub.com/doi/full/10.1177/
 ```
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", etc = list(n.blocks=20), func="evppi", method="so"))
 ```
+or
+```
+evppi.remote(outputs_nb, inputs, pars="p1", n.blocks=20, method="so")
+```
 
 The method of [Sadatsafavi et al.](https://doi.org/10.1016/j.jval.2012.10.018):
 
 ```
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", func="evppi", method="sal"))
+```
+or
+```
+evppi.remote(outputs_nb, inputs, pars="p1", method="sal")
 ```
 
 ### Traditional Monte Carlo nested loop method
@@ -292,6 +332,10 @@ These functions are then supplied as arguments to `evppi_mc`, along with the num
 ```
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(model_fn = model_fn_nb, par_fn = par_fn, pars="p1", func="evppi_mc", ninner=1000, nouter=100))
 ```
+or
+```
+evppi_mc.remote(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)
+```
 
 #### Accounting for parameter correlation
 
@@ -308,6 +352,15 @@ par_fn_corr <- function(n, p1=NULL){
              p2 = rnorm(n, p1_new, 2))
 }
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(model_fn = model_fn_nb, par_fn = par_fn_corr, pars="p1", func="evppi_mc", ninner=1000, nouter=100))
+```
+or
+```
+par_fn_corr <- function(n, p1=NULL){
+  p1_new <- if (is.null(p1)) rnorm(n, 1, 1) else p1
+  data.frame(p1 = p1_new,
+             p2 = rnorm(n, p1_new, 2))
+}
+evppi_mc.remote(model_fn_nb, par_fn_corr, pars="p1", ninner=1000, nouter=100)
 ```
 
 ## Expected value of sample information
@@ -352,6 +405,17 @@ datagen_normal <- function(inputs, n=100, sd=1){
 set.seed(1)
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, datagen_fn = datagen_normal, n=c(10,100,1000), func="evsi"))
 ```
+or
+```
+datagen_normal <- function(inputs, n=100, sd=1){
+  data.frame(xbar = rnorm(n = nrow(inputs),
+                          mean = inputs[,"p1"],
+                          sd = sd / sqrt(n)))
+}
+
+set.seed(1)
+evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, n=c(10,100,1000))
+```
 
 ### Built-in study designs
 
@@ -360,6 +424,11 @@ The function `datagen_normal` is also included in the `voi` package as a built-i
 ```
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", study = "normal_known", n=c(100,1000), func="evsi"))
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_cea, inputs = inputs, datagen_fn = datagen_normal, n=c(10,100,1000), func="evsi"))
+```
+or
+```
+evsi.remote(outputs_nb, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
+evsi.remote(outputs_cea, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
 ```
 
 The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling `evsi` with an `aux_pars` argument, e.g. `evsi(..., aux_pars=list(sd=2), ...)`.
@@ -392,11 +461,25 @@ likelihood_normal <- function(Y, inputs, n=100, sig=1){
 
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1", datagen_fn = datagen_normal, likelihood = likelihood_normal, n=100, func="evsi", method="is", nsim=1000))
 ```
+or
+```
+likelihood_normal <- function(Y, inputs, n=100, sig=1){
+  mu <- inputs[,"p1"]
+  dnorm(Y[,"xbar"], mu, sig/sqrt(n))
+}
+
+evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, likelihood = likelihood_normal, 
+            n=100, pars = "p1", method="is", nsim=1000)
+```
 
 Again, this study model is available as a built-in study design, so instead of writing a user-defined likelihood and data generation function, `evsi` can also be invoked with `study="normal_known", method="is"`.
 
 ```
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars="p1",study = "normal_known", n=100, func="evsi", method="is", nsim=1000))
+```
+or
+```
+evsi.remote(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1", method="is", nsim=1000)
 ```
 
 ### Further work
@@ -509,6 +592,10 @@ This is achieved using the function `evsivar` in the `voi` package, as follows.
 ```
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = p2, inputs = inputs, study = "binary", pars = "p1", func="evsivar", n=c(100,1000,10000)))
 ```
+or
+```
+evsivar.remote(p2, inputs, study = "binary", pars="p1", n=c(100,1000,10000))
+```
 
 As the proposed sample sizes increase, the expected value of sample information informing $p_1$ converges to the EVPPI, the expected value of perfect information about $p_1$.
 
@@ -517,6 +604,11 @@ Alternatively, suppose we were able to collect information about the *unbiased* 
 ```
 inputs_p2 = data.frame(p2 = p2)
 model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = p2, inputs = inputs_p2, study = "binary", pars = "p1", func="evsivar", n=c(100,1000,10000)))
+```
+or
+```
+inputs_p2 = data.frame(p2 = p2)
+evsivar.remote(p2, inputs=inputs_p2, study = "binary", pars="p2", n=c(100, 1000, 10000))
 ```
 
 The unbiased data is clearly more valuable than the biased data, with double the variance reductions from biased data of the same sample size. As the sample size increases, the value converges to the EVPI, hence (in the asymptote) we will eliminate all uncertainty about our quantity of interest $p_2$.

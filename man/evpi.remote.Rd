@@ -2,16 +2,58 @@
 % Please edit documentation in R/voi_remote.R
 \name{evpi.remote}
 \alias{evpi.remote}
-\title{Title}
+\title{Calculate the expected value of perfect information from a decision model}
 \usage{
 evpi.remote(outputs, nsim)
 }
 \arguments{
-\item{nsim}{}
+\item{outputs}{This could take one of two forms
+
+"net benefit" form: a matrix or data frame of samples from the uncertainty
+distribution of the expected net benefit.  The number of rows should equal
+the number of samples, and the number of columns should equal the number
+of decision options.
+
+"cost-effectiveness analysis" form: a list with the following named
+components:
+
+\code{"c"}: a matrix or data frame of samples from the distribution of
+costs.  There should be one column for each decision option.
+
+\code{"e"}: a matrix or data frame of samples from the distribution of
+effects, likewise.
+
+\code{"k"}: a vector of willingness-to-pay values.
+
+Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in
+this "cost-effectiveness analysis" format, therefore they may be supplied as
+the \code{outputs} argument.
+
+If \code{outputs} is a matrix or data frame it is assumed to be of "net
+benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
+effectiveness analysis" form.}
+
+\item{nsim}{Number of simulations from the model to use for calculating
+EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
+\code{outputs} are used.}
 }
 \value{
-
+The expected value of perfect information, either as a single value, or a data frame indicating the value for each willingness-to-pay.
 }
 \description{
-Title
+Calculate the expected value of perfect information from a decision model
+}
+\examples{
+set.seed(1)
+nsam <- 10000
+inputs <- data.frame(
+  p1 = rnorm(nsam, 1, 1),
+  p2 = rnorm(nsam, 0, 2)
+)
+outputs_nb <- data.frame(
+  t1 = 0,
+  t2 = inputs$p1 - inputs$p2
+)
+nsim <- NULL
+evpi.remote(outputs = outputs_nb, nsim = nsim)
 }

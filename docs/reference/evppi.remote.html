@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Title — evppi.remote • voi.remote</title>
+<title>Calculate the expected value of partial perfect information from a decision model — evppi.remote • voi.remote</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Title — evppi.remote" />
-<meta property="og:description" content="Title" />
+<meta property="og:title" content="Calculate the expected value of partial perfect information from a decision model — evppi.remote" />
+<meta property="og:description" content="Calculate the expected value of partial perfect information from a decision model" />
 
 
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -115,13 +115,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Title</h1>
+    <h1>Calculate the expected value of partial perfect information from a decision model</h1>
     
     <div class="hidden name"><code>evppi.remote.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Title</p>
+    <p>Calculate the expected value of partial perfect information from a decision model</p>
     </div>
 
     <pre class="usage"><span class='fu'>evppi.remote</span><span class='op'>(</span><span class='va'>outputs</span>, <span class='va'>inputs</span>, <span class='va'>pars</span>, <span class='va'>se</span>, <span class='va'>B</span>, <span class='va'>nsim</span>, <span class='va'>verbose</span>, <span class='va'>method</span>, <span class='va'>...</span><span class='op'>)</span></pre>
@@ -130,17 +130,108 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>outputs</th>
+      <td><p>This could take one of two forms</p>
+<p>"net benefit" form: a matrix or data frame of samples from the uncertainty
+distribution of the expected net benefit.  The number of rows should equal
+the number of samples, and the number of columns should equal the number
+of decision options.</p>
+<p>"cost-effectiveness analysis" form: a list with the following named
+components:</p>
+<p><code>"c"</code>: a matrix or data frame of samples from the distribution of
+costs.  There should be one column for each decision option.</p>
+<p><code>"e"</code>: a matrix or data frame of samples from the distribution of
+effects, likewise.</p>
+<p><code>"k"</code>: a vector of willingness-to-pay values.</p>
+<p>Objects of class <code>"bcea"</code>, as created by the <span class="pkg">BCEA</span> package, are in
+this "cost-effectiveness analysis" format, therefore they may be supplied as
+the <code>outputs</code> argument.</p>
+<p>If <code>outputs</code> is a matrix or data frame it is assumed to be of "net
+benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
+effectiveness analysis" form.</p></td>
+    </tr>
+    <tr>
+      <th>inputs</th>
+      <td><p>Matrix or data frame of samples from the uncertainty
+distribution of the input parameters of the decision model.   The number
+of columns should equal the number of parameters, and the columns should
+be named.    This should have the same number of rows as there are samples
+in <code>outputs</code>, and each row of the samples in <code>outputs</code> should
+give the model output evaluated at the corresponding parameters.</p></td>
+    </tr>
+    <tr>
+      <th>pars</th>
+      <td><p>A character vector giving the parameters of interest, for which
+a single EVPPI calculation is required.  If the vector has multiple
+element, then the joint expected value of perfect information on all these
+parameters together is calculated.</p>
+<p>Alternatively, <code>pars</code> may be a list.  Multiple EVPPI calculations are
+then performed, one for each component of <code>pars</code> defined in the above
+vector form.</p>
+<p><code>pars</code> must be specified if <code>inputs</code> is a matrix or data frame.
+This should then correspond to particular columns of <code>inputs</code>.    If
+<code>inputs</code> is a vector, this is assumed to define the single parameter
+of interest, then <code>pars</code> is not required.</p></td>
+    </tr>
+    <tr>
+      <th>se</th>
+      <td><p>If possible, calculate a standard error for the EVPPI.  Currently
+only supported for <code>method="gam"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>B</th>
+      <td><p>Number of parameter replicates for calculating the standard error.</p></td>
+    </tr>
+    <tr>
+      <th>nsim</th>
+      <td><p>Number of simulations from the model to use for calculating
+EVPPI.  The first <code>nsim</code> rows of the objects in <code>inputs</code> and
+<code>outputs</code> are used.</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>If <code>TRUE</code>, then messages are printed describing each step of
+the calculation, if the method supplies these.  Useful to see the progress
+of slow calculations.</p></td>
+    </tr>
+    <tr>
+      <th>method</th>
+      <td><p>Character string indicating the calculation method. The default
+methods are based on nonparametric regression</p></td>
+    </tr>
+    <tr>
       <th>...</th>
-      <td></td>
+      <td><p>Other arguments to control specific methods.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    
+    <p>A data frame with a column <code>pars</code> indicating the parameter(s)
+and a column <code>evppi</code> giving the corresponding EVPPI.</p>
+<p>If <code>outputs</code> is of "cost-effectiveness analysis" form so that there is
+one EVPPI per willingness-to-pay value, then a column <code>k</code> identifies the
+willingness-to-pay.</p>
+<p>If standard errors are requested, then the standard errors are returned in
+the column <code>se</code>.</p>
 
-
-
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>
+<span class='va'>nsam</span> <span class='op'>&lt;-</span> <span class='fl'>10000</span>
+<span class='va'>inputs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
+  p1 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>nsam</span>, <span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span>,
+  p2 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>nsam</span>, <span class='fl'>0</span>, <span class='fl'>2</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>outputs_nb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
+  t1 <span class='op'>=</span> <span class='fl'>0</span>,
+  t2 <span class='op'>=</span> <span class='va'>inputs</span><span class='op'>$</span><span class='va'>p1</span> <span class='op'>-</span> <span class='va'>inputs</span><span class='op'>$</span><span class='va'>p2</span>
+<span class='op'>)</span>
+<span class='va'>nsim</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
+<span class='va'>pars</span> <span class='op'>&lt;-</span> <span class='st'>"p1"</span>
+<span class='va'>nsim</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
+<span class='va'>method</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
+<span class='fu'>evppi.remote</span><span class='op'>(</span>outputs <span class='op'>=</span> <span class='va'>outputs_nb</span>, inputs <span class='op'>=</span> <span class='va'>inputs</span>, pars <span class='op'>=</span> <span class='va'>pars</span>, nsim <span class='op'>=</span> <span class='va'>nsim</span>, method <span class='op'>=</span> <span class='va'>method</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Calling server at https://prism.peermodelsnetwork.com/route/voi/run</span></div><div class='output co'>#&gt; <span class='error'>Error in prism_call("prism_model_run", base_url = address, model_input = model_input,     api_key = api_key): 1000</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
