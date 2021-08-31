@@ -1,5 +1,5 @@
 ---
-title: 'voi for Value of Information calculation: package overview'
+title: 'voi.remote for Value of Information calculation: package overview'
 author: "Christopher Jackson"
 date: "`r Sys.Date()`"
 output: 
@@ -20,6 +20,8 @@ knitr::opts_chunk$set(echo = TRUE)
 Value of Information methods are a decision-theoretic framework for estimating the expected value of getting more information of particular kinds, in scientific problems based on combining one or more sources of data.
 
 The theory of the methods and details on how to use them in practice are described in several papers and books (some will be linked in this document).
+
+This document is based on the VoI vignette written by Christopher Jackson. The `voi.remote` package has the exact same functionalities as `voi` package, but further allows users to run all the VoI functions on the server rather than running locally.
 
 While some details may not be fully explained in the current draft of this document, the `voi` package is intended to accompany a book which is under preparation. When the book is finished, it will provide all background information that users of the package will need to know. As the book is developed, useful features may be added to the package.
 
@@ -106,18 +108,16 @@ opp_loss <- nb_perfect - nb_current
 mean(opp_loss)
 ```
 
-#### Using the `voi` package to calculate EVPI
+#### Using the `voi.remote` package to calculate EVPI
 
-The `voi` package contains a simple function `evpi` to compute the EVPI using the above procedure. The function automatically detects whether your outputs are in net benefit or cost-effectiveness format.
+The `voi.remote` package contains a simple function `evpi` to compute the EVPI using the above procedure. The function automatically detects whether your outputs are in net benefit or cost-effectiveness format.
 
 ```{r}
 library(voi.remote)
 ```
 
-```
-evpi.remote(outputs_nb)
-evpi.remote(outputs_cea)
-```
+    evpi.remote(outputs_nb)
+    evpi.remote(outputs_cea)
 
 Note the result is slightly different from `evpi1`, since it uses the sample-based estimate of `r max(colMeans(outputs_nb))` of the expected net benefit under current information, rather than the known expectation of 1.
 
@@ -150,53 +150,43 @@ The *expected value of partial perfect information* (EVPPI) for a parameter $\ph
 
 The EVPPI is defined as the expected net benefit given perfect knowledge of $\phi$, minus the expected net benefit given current information. [ algebraic def ]
 
-The function `evppi` can be used to compute this.
+The function `evppi.remote` can be used to compute this.
 
 There are a variety of alternative computational methods implemented in this function. The default methods are based on nonparametric regression, and come from [Strong et al. (2013)](https://doi.org/10.1177/0272989X13505910). If there are four or fewer parameters, then a generalized additive model is used. With five or more, then Gaussian process regression is used.
 
-### Invoking the `evppi` function.
+### Invoking the `evppi.remote` function.
 
-To call `evppi`, supply a sample of outputs and inputs (in the same form as defined above) in the first two arguments. The parameter or parameters of interest (whose EVPPI is desired) is supplied in the `"pars"` argument. This can be expressed in various ways.
+To call `evppi.remote`, supply a sample of outputs and inputs (in the same form as defined above) in the first two arguments. The parameter or parameters of interest (whose EVPPI is desired) is supplied in the `"pars"` argument. This can be expressed in various ways.
 
 **(a) As a vector**. The joint EVPPI is computed for all parameters in this vector. If the vector has more than one element, then the function returns the expected value of perfect information on all of these parameters simultaneously (described as the "multiparameter" EVPPI by [Strong et al.](https://doi.org/10.1177/0272989X13505910)).
 
-```
-evppi.remote(outputs_nb, inputs, pars="p1")
-evppi.remote(outputs_nb, inputs, pars=c("p1","p2"))
-```
+    evppi.remote(outputs_nb, inputs, pars="p1")
+    evppi.remote(outputs_nb, inputs, pars=c("p1","p2"))
 
 **(b) As a list**. A separate EVPPI is computed for each element of the list. In the second example below, this is the EVPPI of $p_1$, followed by the multiparameter EVPPI of $(p_1,p_2)$. Note that the multiparameter EVPPI is the theoretically same as the EVPI if, as in this case, the vector includes all of the parameters in the model (though note the difference from EVPI estimates above due to the different computational method).
 
-```
-evppi.remote(outputs_nb, inputs, pars=list("p1",c("p1","p2")))
-evppi.remote(outputs_cea, inputs, pars=list("p1",c("p1","p2")))
-```
+    evppi.remote(outputs_nb, inputs, pars=list("p1",c("p1","p2")))
+    evppi.remote(outputs_cea, inputs, pars=list("p1",c("p1","p2")))
 
-The `evppi` function returns a data frame with columns indicating the parameter (or parameters), and the corresponding EVPPI. If the outputs are in cost-effectiveness analysis format, then a separate column is returned indicating the willingness-to-pay.
+The `evppi.remote` function returns a data frame with columns indicating the parameter (or parameters), and the corresponding EVPPI. If the outputs are in cost-effectiveness analysis format, then a separate column is returned indicating the willingness-to-pay.
 
-```
-evppi.remote(outputs_cea, inputs, pars=list("p1",c("p1","p2")))
-```
+    evppi.remote(outputs_cea, inputs, pars=list("p1",c("p1","p2")))
 
 ### Changing the default calculation method
 
-The method can be changed by supplying the `method` argument to `evppi`. Some methods have additional options to tune them. For a full list of these options, see `help(evppi)`.
+The method can be changed by supplying the `method` argument to `evppi.remote`. Some methods have additional options to tune them. For a full list of these options, see `help(evppi.remote)`.
 
 #### Gaussian process regression
 
 (from [Strong et al. (2013)](https://doi.org/10.1177/0272989X13505910)). The number of random samples to use in this computation can be changed using the `nsim` argument, which can be useful for this method as it can be prohibitive for large samples. Here the sample of 10000 is reduced to 1000.
 
-```
-evppi.remote(outputs_nb, inputs, pars="p1", method="gp", nsim=1000)
-```
+    evppi.remote(outputs_nb, inputs, pars="p1", method="gp", nsim=1000)
 
 #### Multivariate adaptive regression splines
 
 This is a variant of generalized additive models based on linear splines, which uses a package called [earth](https://CRAN.R-project.org/package=earth).
 
-```
-evppi.remote(outputs_nb, inputs, pars="p1", method="earth")
-```
+    evppi.remote(outputs_nb, inputs, pars="p1", method="earth")
 
 #### INLA method
 
@@ -210,27 +200,20 @@ devtools::install_version("ldr", version = "1.3.3", repos = "http://cran.uk.r-pr
 
 It is only applicable to calculating the multiparameter EVPPI for 2 or more parameters. FIXME why doesn't it work in this example?
 
-```
-model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars=c("p1","p2"), func="evppi", method="inla"))
-```
+    model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars=c("p1","p2"), func="evppi", method="inla"))
 
 #### Tuning the generalized additive model method
 
 The generalized additive model formula can be changed with the `gam_formula` argument. This is supplied to the `gam` function from the `mgcv` package. The default formula uses a tensor product, and if there are more than four parameters, then a basis dimension of 4 terms per parameter is assumed.\
 A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficiently flexible to represent how the outputs depend on the inputs, but can also be estimated in practice, given the complexity of the GAM and the number of random samples available to fit it to.
 
-```
-evppi.remote(outputs_nb, inputs, pars=c("p1","p2"), method="gam", gam_formula="s(p1) + s(p2)")
-
-```
+    evppi.remote(outputs_nb, inputs, pars=c("p1","p2"), method="gam", gam_formula="s(p1) + s(p2)")
 
 Note that if there are spaces in the variable names in `inputs` and `pars`, then for `gam_formula` the spaces should be converted to underscores, or else an `"unexpected symbol"` error will be returned from `gam`.
 
-A standard error for the EVPPI estimates from the GAM method, resulting from uncertainty about the parameters of the GAM approximation, can be obtained by calling `evppi` with `se=TRUE`. This uses $B$ samples from the distribution of the GAM parameters, thus the standard error can be estimated more accurately by increasing B.
+A standard error for the EVPPI estimates from the GAM method, resulting from uncertainty about the parameters of the GAM approximation, can be obtained by calling `evppi.remote` with `se=TRUE`. This uses $B$ samples from the distribution of the GAM parameters, thus the standard error can be estimated more accurately by increasing B.
 
-```
-evppi.remote(outputs_nb, inputs, pars="p1", se=TRUE, B=100)
-```
+    evppi.remote(outputs_nb, inputs, pars="p1", se=TRUE, B=100)
 
 #### Single-parameter methods
 
@@ -238,15 +221,11 @@ These are only applicable for computing the EVPPI for a single scalar parameter.
 
 The method of [Strong and Oakley](https://journals.sagepub.com/doi/full/10.1177/0272989X12465123):
 
-```
-evppi.remote(outputs_nb, inputs, pars="p1", n.blocks=20, method="so")
-```
+    evppi.remote(outputs_nb, inputs, pars="p1", n.blocks=20, method="so")
 
 The method of [Sadatsafavi et al.](https://doi.org/10.1016/j.jval.2012.10.018):
 
-```
-evppi.remote(outputs_nb, inputs, pars="p1", method="sal")
-```
+    evppi.remote(outputs_nb, inputs, pars="p1", method="sal")
 
 ### Traditional Monte Carlo nested loop method
 
@@ -254,7 +233,7 @@ evppi.remote(outputs_nb, inputs, pars="p1", method="sal")
 
 This is generally too slow to provide reliable EVPPI estimates in realistic models, but is provided in this package for technical completeness.
 
-This method is available in the function `evppi_mc`. It requires the user to supply two functions; one to evaluate the decision-analytic model, and one to generate parameter values.
+This method is available in the function `evppi_mc.remote`. It requires the user to supply two functions; one to evaluate the decision-analytic model, and one to generate parameter values.
 
 #### Model evaluation function
 
@@ -286,13 +265,11 @@ par_fn <- function(n){
 }
 ```
 
-#### Invoking `evppi_mc`
+#### Invoking `evppi_mc.remote`
 
-These functions are then supplied as arguments to `evppi_mc`, along with the number of samples to draw in the inner and outer loops. 1000 inner samples and 100 outer samples give a reasonable EVPPI estimate in this example, but many more samples may be required for the result to converge to the EVPPI in more complex models.
+These functions are then supplied as arguments to `evppi_mc.remote`, along with the number of samples to draw in the inner and outer loops. 1000 inner samples and 100 outer samples give a reasonable EVPPI estimate in this example, but many more samples may be required for the result to converge to the EVPPI in more complex models.
 
-```
-evppi_mc.remote(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)
-```
+    evppi_mc.remote(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)
 
 #### Accounting for parameter correlation
 
@@ -300,28 +277,26 @@ We may want the EVPPI for a parameter which is correlated with another parameter
 
 If the argument `p1` is not supplied, then the function should return a sample from the joint distribution marginalised over $p_1$, as in this case where if we do not supply `p1` then a random `p1` is drawn followed by `p2|p1`.
 
-A function of this form should then be passed to `evppi_mc` if the parameters are correlated. This allows `evppi_mc` to draw from the appropriate distribution in the inner loop.
+A function of this form should then be passed to `evppi_mc.remote` if the parameters are correlated. This allows `evppi_mc.remote` to draw from the appropriate distribution in the inner loop.
 
-```
-par_fn_corr <- function(n, p1=NULL){
-  p1_new <- if (is.null(p1)) rnorm(n, 1, 1) else p1
-  data.frame(p1 = p1_new,
-             p2 = rnorm(n, p1_new, 2))
-}
-evppi_mc.remote(model_fn_nb, par_fn_corr, pars="p1", ninner=1000, nouter=100)
-```
+    par_fn_corr <- function(n, p1=NULL){
+      p1_new <- if (is.null(p1)) rnorm(n, 1, 1) else p1
+      data.frame(p1 = p1_new,
+                 p2 = rnorm(n, p1_new, 2))
+    }
+    evppi_mc.remote(model_fn_nb, par_fn_corr, pars="p1", ninner=1000, nouter=100)
 
 ## Expected value of sample information
 
 The *expected value of sample information* is the expected value of collecting a specific amount of data from a study designed to give information about some model parameter or parameters. It is defined as the expected net benefit given the study data, minus the expected net benefit with current information.
 
-The function `evsi` can be used to calculate this. The default method is based on nonparametric regression (from [Strong et al.](https://dx.doi.org/10.1177%2F0272989X15575286)). This requires the user to either
+The function `evsi.remote` can be used to calculate this. The default method is based on nonparametric regression (from [Strong et al.](https://dx.doi.org/10.1177%2F0272989X15575286)). This requires the user to either
 
 (a) supply an R function to generate and summarise the study data, or
 
 (b) use one of the built-in study designs, and specify which of the model parameters are informed by this study.
 
-To illustrate how to use `evsi`, suppose we want to collect a sample of $n$ normally-distributed observations in order to get a better estimate of the treatment 2 effectiveness $p_1$. Under current information, $p_1$ is distributed as $N(1,1)$. After collecting the sample, we would expect this distribution to become more precise, hence reduce the likelihood of making a wrong decision. The EVSI measures the expected improvement in net benefit from this sample.
+To illustrate how to use `evsi.remote`, suppose we want to collect a sample of $n$ normally-distributed observations in order to get a better estimate of the treatment 2 effectiveness $p_1$. Under current information, $p_1$ is distributed as $N(1,1)$. After collecting the sample, we would expect this distribution to become more precise, hence reduce the likelihood of making a wrong decision. The EVSI measures the expected improvement in net benefit from this sample.
 
 Denote the study data as $x_1,\ldots,x_n$, and suppose that they are distributed as $x_i \sim N(p_1, \sigma)$. Hence the *mean* of the sample $\bar{x} = \sum_{i=1^n} x_i$ is a *summary statistic* containing the information provided by the data about $p_1$.
 
@@ -341,41 +316,37 @@ The function `datagen_normal` below does this in a vectorised way for the exampl
 
 The sample size is included as an argument `n` to the data generation function. The names of the returned data-frame can be anything (`xbar` was used in this case to be descriptive).
 
-The `evsi` function can then be used to compute the EVSI for a series of different sample sizes from this design. Note how the EVSI converges to the EVPPI as the sample size increases.
+The `evsi.remote` function can then be used to compute the EVSI for a series of different sample sizes from this design. Note how the EVSI converges to the EVPPI as the sample size increases.
 
-```
-datagen_normal <- function(inputs, n=100, sd=1){
-  data.frame(xbar = rnorm(n = nrow(inputs),
-                          mean = inputs[,"p1"],
-                          sd = sd / sqrt(n)))
-}
+    datagen_normal <- function(inputs, n=100, sd=1){
+      data.frame(xbar = rnorm(n = nrow(inputs),
+                              mean = inputs[,"p1"],
+                              sd = sd / sqrt(n)))
+    }
 
-set.seed(1)
-evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, n=c(10,100,1000))
-```
+    set.seed(1)
+    evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, n=c(10,100,1000))
 
 ### Built-in study designs
 
-The function `datagen_normal` is also included in the `voi` package as a built-in study design. To invoke the `evsi` function for a built-in study design, we have to supply the name of the design (in this case `"normal_known"`) and the name of the parameter or parameters (corresponding to a column of "inputs") which is estimated by the study data.
+The function `datagen_normal` is also included in the `voi` package as a built-in study design. To invoke the `evsi.remote` function for a built-in study design, we have to supply the name of the design (in this case `"normal_known"`) and the name of the parameter or parameters (corresponding to a column of "inputs") which is estimated by the study data.
 
-```
-evsi.remote(outputs_nb, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
-evsi.remote(outputs_cea, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
-```
+    evsi.remote(outputs_nb, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
+    evsi.remote(outputs_cea, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
 
-The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling `evsi` with an `aux_pars` argument, e.g. `evsi(..., aux_pars=list(sd=2), ...)`.
+The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling `evsi.remote` with an `aux_pars` argument, e.g. `evsi(..., aux_pars=list(sd=2), ...)`.
 
-Note that the results will be slightly different every time the `evsi` function is invoked with the same arguments, due to Monte Carlo error from generating the data (unless the seed is set with the R function `set_seed` before each invocation).
+Note that the results will be slightly different every time the `evsi.remote` function is invoked with the same arguments, due to Monte Carlo error from generating the data (unless the seed is set with the R function `set_seed` before each invocation).
 
 Other built-in study designs include
 
 `"binary"`: A single sample of observations of a binary outcome. Requires one parameter to be specified in `pars`, that is, the probability of the outcome.
 
-`"trial_binary"`: A two-arm trial with a binary outcome. Requires two parameters to be specified in `pars`: the probability of the outcome in arm 1 and 2 respectively. The sample size is the same in each arm, specifed in the `n` argument to `evsi`, and the binomial outcomes are returned in the first and second column respectively.
+`"trial_binary"`: A two-arm trial with a binary outcome. Requires two parameters to be specified in `pars`: the probability of the outcome in arm 1 and 2 respectively. The sample size is the same in each arm, specifed in the `n` argument to `evsi.remote`, and the binomial outcomes are returned in the first and second column respectively.
 
 ### Importance sampling method
 
-An alternative method comes from [Menzies (2015)](https://doi.org/10.1177/0272989X15583495) and is based on importance sampling. This can be invoked as `evsi(..., method="is")`.
+An alternative method comes from [Menzies (2015)](https://doi.org/10.1177/0272989X15583495) and is based on importance sampling. This can be invoked as `evsi.remote(..., method="is")`.
 
 As well as a data generation function in the above format, this also requires the user to supply a *likelihood function* for the study data.
 
@@ -385,21 +356,17 @@ Any user-supplied likelihood function should consistently define the same model 
 
 This method is typically slower than the default nonparametric regression method, so it may be worth setting `nsim` to a value lower than the number of samples in `inputs`. Below `nsim=1000` is used so that only 1000 samples are used, instead of the full 10000 samples contained in `inputs`.
 
-```
-likelihood_normal <- function(Y, inputs, n=100, sig=1){
-  mu <- inputs[,"p1"]
-  dnorm(Y[,"xbar"], mu, sig/sqrt(n))
-}
+    likelihood_normal <- function(Y, inputs, n=100, sig=1){
+      mu <- inputs[,"p1"]
+      dnorm(Y[,"xbar"], mu, sig/sqrt(n))
+    }
 
-evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, likelihood = likelihood_normal, 
-            n=100, pars = "p1", method="is", nsim=1000)
-```
+    evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, likelihood = likelihood_normal, 
+                n=100, pars = "p1", method="is", nsim=1000)
 
-Again, this study model is available as a built-in study design, so instead of writing a user-defined likelihood and data generation function, `evsi` can also be invoked with `study="normal_known", method="is"`.
+Again, this study model is available as a built-in study design, so instead of writing a user-defined likelihood and data generation function, `evsi.remote` can also be invoked with `study="normal_known", method="is"`.
 
-```
-evsi.remote(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1", method="is", nsim=1000)
-```
+    evsi.remote(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1", method="is", nsim=1000)
 
 ### Further work
 
@@ -446,31 +413,27 @@ A more interesting quantity is the EVPPI for a parameter. It describes the expec
 
 $$EVPPI[p_1] = var(p_2) - E(var(p_2| p_1)$$ $$EVPPI[\beta] = var(p_2) - E(var(p_2 | \beta)$$
 
-These can be computed using nonparametric regression, as described in [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932). This is implemented in the function `evppivar` in the `voi` package.
+These can be computed using nonparametric regression, as described in [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932). This is implemented in the function `evppivar` in the `voi.remote` package.
 
-```
-inputs <- data.frame(p1, beta)
-(evppi_beta <- evppivar(p2, inputs, par="beta"))
-(evppi_p1 <- evppivar(p2, inputs, par="p1"))
-```
+    inputs <- data.frame(p1, beta)
+    (evppi_beta <- evppivar(p2, inputs, par="beta"))
+    (evppi_p1 <- evppivar(p2, inputs, par="p1"))
 
 Hence a slightly greater improvement in variance is expected from knowing the true risk in the biased sample, compared to knowing the relative odds of infection.
 
 These EVPPI values are easier to interpret if they are converted to the scale of a *standard deviation*. If we subtract the EVPPI from the original variance of $p_2$ we get, for example $E(var(p_2) | p_1)$. The square root of this is an estimate of what the standard deviation of $p_2$ would be if we learnt $p_1$ (note that is not exactly the *expected* SD remaining, since we cannot swap the order of the square root and expectation operators).
 
-```
-sqrt(var(p2)) # or sd(p2)
-sqrt(var(p2) - evppi_beta$evppi)
-sqrt(var(p2) - evppi_p1$evppi)
-```
+    sqrt(var(p2)) # or sd(p2)
+    sqrt(var(p2) - evppi_beta$evppi)
+    sqrt(var(p2) - evppi_p1$evppi)
 
 Hence we would expect to reduce the SD of $p_1$ to around 2/3 of its original value by learning $p_1$ or $\beta$.
 
 ### How regression-based EVPPI estimation works
 
-EVPPI is estimated here by *nonparametric regression* of the output on the input. Recall that the method of [Strong et al. (2013)](https://doi.org/10.1177/0272989X13505910) was used in `evppi` for models with decisions. [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932) showed how this method applied in a wider class of problems, including models for estimation.
+EVPPI is estimated here by *nonparametric regression* of the output on the input. Recall that the method of [Strong et al. (2013)](https://doi.org/10.1177/0272989X13505910) was used in `evppi.remote` for models with decisions. [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932) showed how this method applied in a wider class of problems, including models for estimation.
 
-To estimate the expected reduction in variance in $p_2$, given knowledge of $p_1$, the `evppivar` function fits a regression model with `p2` as the outcome, and `p1` as the single predictor. A generalized additive model based on splines is fitted using the `gam` function from the `mgcv` package.
+To estimate the expected reduction in variance in $p_2$, given knowledge of $p_1$, the `evppivar.remote` function fits a regression model with `p2` as the outcome, and `p1` as the single predictor. A generalized additive model based on splines is fitted using the `gam` function from the `mgcv` package.
 
 ```{r}
 plot(x=p1, y=p2, pch=".")
@@ -481,18 +444,14 @@ lines(sort(p1), p1fit[order(p1)], col="blue")
 
 Taking the variance of the *residuals* from this regression (observed minus fitted values) produces an estimate of $E(var(p_2 | p_1 = x))$, intuitively, the expected variance given knowledge of $p_1$, which, when subtracted from the variance of $p_2$, gives the EVPPI.
 
-```
-p1res <- p2 - p1fit
-var(p2) - var(p1res)
-```
+    p1res <- p2 - p1fit
+    var(p2) - var(p1res)
 
-This agrees (up to Monte Carlo error) with the value produced by `evppivar`, which is obtained by a closely-related method, as the variance of the fitted values from this regression. This is equal to the total variance minus the variance of the residuals, through the "law of total variance":
+This agrees (up to Monte Carlo error) with the value produced by `evppivar.remote`, which is obtained by a closely-related method, as the variance of the fitted values from this regression. This is equal to the total variance minus the variance of the residuals, through the "law of total variance":
 
 $$var(Y) - E_{X}\left[var_{Y| X}(Y |X)\right] = var_{X} \left[E_{Y|X}(Y|X)\right]$$
 
-```
-var(p1fit)
-```
+    var(p1fit)
 
 ### EVSI for estimation
 
@@ -500,25 +459,24 @@ Now suppose we planned to collect additional survey data on the prevalence of in
 
 First suppose that we can collect more data on the biased population that was used to estimate $p_1$. The EVSI can be computed to show the expected value of surveying $n$ individuals, for different sample sizes $n$.
 
-This is achieved using the function `evsivar` in the `voi` package, as follows.
+This is achieved using the function `evsivar.remote` in the `voi.remote` package, as follows.
 
--   As in `evppivar`, samples from the prior distributions of the parameters are supplied in the data frame `inputs`.
+-   As in `evppivar.remote`, samples from the prior distributions of the parameters are supplied in the data frame `inputs`.
 
 -   `study="binary"` indicates that the proposed study consists of a binary outcome observed from `n` individuals.\
 
 -   `pars="p1"` indicates which input parameter is informed by the study, in other words, which parameter is assumed to generate the study data.
 
+```{=html}
+<!-- -->
 ```
-evsivar.remote(p2, inputs, study = "binary", pars="p1", n=c(100,1000,10000))
-```
+    evsivar.remote(p2, inputs, study = "binary", pars="p1", n=c(100,1000,10000))
 
 As the proposed sample sizes increase, the expected value of sample information informing $p_1$ converges to the EVPPI, the expected value of perfect information about $p_1$.
 
 Alternatively, suppose we were able to collect information about the *unbiased* population, whose infection prevalence is $p_2$. That is, suppose we surveyed $n$ individuals, each with a binary infection outcome generated with probability $p_2$. In this case, we can compute the EVSI by using `evsivar` with the model `inputs` defined to equal the model outputs, as follows:
 
-```
-inputs_p2 = data.frame(p2 = p2)
-evsivar.remote(p2, inputs=inputs_p2, study = "binary", pars="p2", n=c(100, 1000, 10000))
-```
+    inputs_p2 = data.frame(p2 = p2)
+    evsivar.remote(p2, inputs=inputs_p2, study = "binary", pars="p2", n=c(100, 1000, 10000))
 
 The unbiased data is clearly more valuable than the biased data, with double the variance reductions from biased data of the same sample size. As the sample size increases, the value converges to the EVPI, hence (in the asymptote) we will eliminate all uncertainty about our quantity of interest $p_2$.
