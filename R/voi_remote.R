@@ -154,7 +154,8 @@ evppi.remote <-
            B = 500,
            nsim = NULL,
            verbose = FALSE,
-           method = NULL) {
+           method = NULL,
+           ...) {
     model_input <-
       list(
         outputs = outputs,
@@ -165,7 +166,8 @@ evppi.remote <-
         if (!is.null(nsim)) {nsim = nsim},
         verbose = verbose,
         func = "evppi",
-        if (!is.null(method)) {method = method}
+        if (!is.null(method)) {method = method},
+        etc = ...
       )
     res <-
       peermodels::model_run(model_name = "voi",
@@ -255,7 +257,7 @@ evppi.remote <-
 #'   t1 = 0,
 #'   t2 = inputs$p1 - inputs$p2
 #' )
-#' evppi.remote(outputs = outputs_nb, inputs = inputs)
+#' evppivar.remote(outputs = outputs_nb, inputs = inputs)
 evppivar.remote <-
   function(outputs,
            inputs,

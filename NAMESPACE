@@ -3,5 +3,6 @@
 export(evpi.remote)
 export(evppi.remote)
 export(evppi_mc.remote)
+export(evppivar.remote)
 export(evsi.remote)
 export(evsivar.remote)

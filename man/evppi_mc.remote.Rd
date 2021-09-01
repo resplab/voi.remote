@@ -4,7 +4,16 @@
 \alias{evppi_mc.remote}
 \title{Traditional two-level Monte Carlo estimator of EVPPI.}
 \usage{
-evppi_mc.remote(model_fn, par_fn, pars, nouter, ninner, wtp, mfargs, verbose)
+evppi_mc.remote(
+  model_fn,
+  par_fn,
+  pars,
+  nouter,
+  ninner,
+  wtp = NULL,
+  mfargs = NULL,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{model_fn}{A function to evaluate a decision-analytic model at a given
@@ -89,7 +98,5 @@ par_fn <- function(n) {
 pars <- "p1"
 ninner <- 1000
 nouter <- 100
-wtp <- NULL
-mfargs <- NULL
-evppi_mc.remote(model_fn = model_fn, par_fn = par_fn, pars = pars, nouter = nouter, ninner = ninner, wtp = wtp, mfargs = mfargs)
+evppi_mc.remote(model_fn = model_fn, par_fn = par_fn, pars = pars, nouter = nouter, ninner = ninner)
 }

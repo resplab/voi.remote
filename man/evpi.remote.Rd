@@ -4,7 +4,7 @@
 \alias{evpi.remote}
 \title{Calculate the expected value of perfect information from a decision model}
 \usage{
-evpi.remote(outputs, nsim)
+evpi.remote(outputs, nsim = NULL)
 }
 \arguments{
 \item{outputs}{This could take one of two forms
@@ -54,6 +54,5 @@ outputs_nb <- data.frame(
   t1 = 0,
   t2 = inputs$p1 - inputs$p2
 )
-nsim <- NULL
-evpi.remote(outputs = outputs_nb, nsim = nsim)
+evpi.remote(outputs = outputs_nb)
 }

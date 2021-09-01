@@ -7,19 +7,20 @@
 evsi.remote(
   outputs,
   inputs,
-  study,
-  datagen_fn,
-  pars,
-  n,
-  likelihood,
-  analysis_model,
-  analysis_options,
-  decision_model,
-  Q,
-  npreg_method,
-  nsim,
-  verbose,
-  method,
+  study = NULL,
+  datagen_fn = NULL,
+  pars = NULL,
+  n = 100,
+  aux_pars = NULL,
+  method = NULL,
+  likelihood = NULL,
+  analysis_model = NULL,
+  analysis_options = NULL,
+  decision_model = NULL,
+  Q = 30,
+  npreg_method = "gam",
+  nsim = NULL,
+  verbose = FALSE,
   ...
 )
 }
@@ -101,6 +102,14 @@ should consist of the variables used in the definition of \code{datagen_fn}
 facilitates calculating EVSI for multiple sample sizes.  TODO if we want to
 design trials with multiple unbalanced arms, we'll need more than one argument.}
 
+\item{aux_pars}{A list of additional fixed arguments to supply to the
+function to generate the data, whether that is a built-in or user-defined
+function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the fixed
+standard deviation in the \code{"normal_known"} model.}
+
+\item{method}{haracter string indicating the calculation method. The default
+methods are based on nonparametric regression.}
+
 \item{likelihood}{Likelihood function, required (and only required) for the
 importance sampling method.  This should have two arguments as follows:
 \enumerate{
@@ -146,9 +155,6 @@ are used.}
 \item{verbose}{Set to \code{TRUE} to print some additional messages to
 help with debugging.}
 
-\item{method}{haracter string indicating the calculation method. The default
-methods are based on nonparametric regression}
-
 \item{...}{Other arguments required by specific methods}
 }
 \value{
@@ -173,16 +179,8 @@ datagen_normal <- function(inputs, n=100, sd=1){
                            mean = inputs[,"p1"],
                            sd = sd / sqrt(n)))
 }
-study <- NULL
 pars <- "p1"
 n <- c(10,100,1000)
-aux_pars <- NULL
-method <-  NULL
-likelihood <- NULL
-analysis_model <- NULL
-analysis_options <- NULL
-decision_model <- NULL
-nsim <- NULL
-evsi.remote(outputs = outputs_nb, inputs = inputs, study = study, datagen_fn = datagen_normal, pars = pars, n = n, method = method, likelihood = likelihood, analysis_model = analysis_model, analysis_options = analysis_options, decision_model = decision_model, nsim = nsim)
+evsi.remote(outputs = outputs_nb, inputs = inputs, datagen_fn = datagen_normal, pars = pars, n = n)
 
 }
