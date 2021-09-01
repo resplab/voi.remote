@@ -413,11 +413,11 @@ A more interesting quantity is the EVPPI for a parameter. It describes the expec
 
 $$EVPPI[p_1] = var(p_2) - E(var(p_2| p_1)$$ $$EVPPI[\beta] = var(p_2) - E(var(p_2 | \beta)$$
 
-These can be computed using nonparametric regression, as described in [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932). This is implemented in the function `evppivar` in the `voi.remote` package.
+These can be computed using nonparametric regression, as described in [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932). This is implemented in the function `evppivar.remote` in the `voi.remote` package.
 
     inputs <- data.frame(p1, beta)
-    (evppi_beta <- evppivar(p2, inputs, par="beta"))
-    (evppi_p1 <- evppivar(p2, inputs, par="p1"))
+    (evppi_beta <- evppivar.remote(p2, inputs, par="beta"))
+    (evppi_p1 <- evppivar.remote(p2, inputs, par="p1"))
 
 Hence a slightly greater improvement in variance is expected from knowing the true risk in the biased sample, compared to knowing the relative odds of infection.
 

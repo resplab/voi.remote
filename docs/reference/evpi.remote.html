@@ -124,7 +124,7 @@
     <p>Calculate the expected value of perfect information from a decision model</p>
     </div>
 
-    <pre class="usage"><span class='fu'>evpi.remote</span><span class='op'>(</span><span class='va'>outputs</span>, <span class='va'>nsim</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>evpi.remote</span><span class='op'>(</span><span class='va'>outputs</span>, nsim <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -173,9 +173,9 @@ EVPPI.  The first <code>nsim</code> rows of the objects in <code>inputs</code> a
   t1 <span class='op'>=</span> <span class='fl'>0</span>,
   t2 <span class='op'>=</span> <span class='va'>inputs</span><span class='op'>$</span><span class='va'>p1</span> <span class='op'>-</span> <span class='va'>inputs</span><span class='op'>$</span><span class='va'>p2</span>
 <span class='op'>)</span>
-<span class='va'>nsim</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
-<span class='fu'>evpi.remote</span><span class='op'>(</span>outputs <span class='op'>=</span> <span class='va'>outputs_nb</span>, nsim <span class='op'>=</span> <span class='va'>nsim</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Calling server at https://prism.peermodelsnetwork.com/route/voi/run</span></div><div class='output co'>#&gt; <span class='error'>Error in curl::curl_fetch_memory(url, handle = handle): HTTP/2 stream 0 was not closed cleanly: PROTOCOL_ERROR (err 1)</span></div></pre>
+<span class='fu'>evpi.remote</span><span class='op'>(</span>outputs <span class='op'>=</span> <span class='va'>outputs_nb</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Calling server at https://prism.peermodelsnetwork.com/route/voi/run</span></div><div class='output co'>#&gt;       [,1]
+#&gt; [1,] 0.476</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

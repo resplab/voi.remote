@@ -6,7 +6,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Calculate the expected value of partial perfect information from a decision model — evppi.remote • voi.remote</title>
+<title>Calculate the expected value of partial perfect information for an estimation
+problem.  This computes the expected reduction in variance in some quantity
+of interest with perfect information about a parameter or parameters of interest. — evppivar.remote • voi.remote</title>
 
 
 <!-- jquery -->
@@ -39,8 +41,12 @@
 
 
 
-<meta property="og:title" content="Calculate the expected value of partial perfect information from a decision model — evppi.remote" />
-<meta property="og:description" content="Calculate the expected value of partial perfect information from a decision model" />
+<meta property="og:title" content="Calculate the expected value of partial perfect information for an estimation
+problem.  This computes the expected reduction in variance in some quantity
+of interest with perfect information about a parameter or parameters of interest. — evppivar.remote" />
+<meta property="og:description" content="Calculate the expected value of partial perfect information for an estimation
+problem.  This computes the expected reduction in variance in some quantity
+of interest with perfect information about a parameter or parameters of interest." />
 
 
 
@@ -115,24 +121,26 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate the expected value of partial perfect information from a decision model</h1>
+    <h1>Calculate the expected value of partial perfect information for an estimation
+problem.  This computes the expected reduction in variance in some quantity
+of interest with perfect information about a parameter or parameters of interest.</h1>
     
-    <div class="hidden name"><code>evppi.remote.Rd</code></div>
+    <div class="hidden name"><code>evppivar.remote.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Calculate the expected value of partial perfect information from a decision model</p>
+    <p>Calculate the expected value of partial perfect information for an estimation
+problem.  This computes the expected reduction in variance in some quantity
+of interest with perfect information about a parameter or parameters of interest.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>evppi.remote</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'>evppivar.remote</span><span class='op'>(</span>
   <span class='va'>outputs</span>,
   <span class='va'>inputs</span>,
   pars <span class='op'>=</span> <span class='cn'>NULL</span>,
-  se <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  B <span class='op'>=</span> <span class='fl'>500</span>,
-  nsim <span class='op'>=</span> <span class='cn'>NULL</span>,
-  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
   method <span class='op'>=</span> <span class='cn'>NULL</span>,
+  nsim <span class='op'>=</span> <span class='cn'>NULL</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -184,13 +192,9 @@ This should then correspond to particular columns of <code>inputs</code>.    If
 of interest, then <code>pars</code> is not required.</p></td>
     </tr>
     <tr>
-      <th>se</th>
-      <td><p>If possible, calculate a standard error for the EVPPI.  Currently
-only supported for <code>method="gam"</code>.</p></td>
-    </tr>
-    <tr>
-      <th>B</th>
-      <td><p>Number of parameter replicates for calculating the standard error.</p></td>
+      <th>method</th>
+      <td><p>Character string indicating the calculation method. The default
+methods are based on nonparametric regression</p></td>
     </tr>
     <tr>
       <th>nsim</th>
@@ -205,11 +209,6 @@ the calculation, if the method supplies these.  Useful to see the progress
 of slow calculations.</p></td>
     </tr>
     <tr>
-      <th>method</th>
-      <td><p>Character string indicating the calculation method. The default
-methods are based on nonparametric regression</p></td>
-    </tr>
-    <tr>
       <th>...</th>
       <td><p>Other arguments to control specific methods.</p></td>
     </tr>
@@ -217,13 +216,8 @@ methods are based on nonparametric regression</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A data frame with a column <code>pars</code> indicating the parameter(s)
-and a column <code>evppi</code> giving the corresponding EVPPI.</p>
-<p>If <code>outputs</code> is of "cost-effectiveness analysis" form so that there is
-one EVPPI per willingness-to-pay value, then a column <code>k</code> identifies the
-willingness-to-pay.</p>
-<p>If standard errors are requested, then the standard errors are returned in
-the column <code>se</code>.</p>
+    <p>expected reduction in variance in some quantity of interest with
+perfect information about a parameter or parameters of interest</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>
@@ -236,7 +230,7 @@ the column <code>se</code>.</p>
   t1 <span class='op'>=</span> <span class='fl'>0</span>,
   t2 <span class='op'>=</span> <span class='va'>inputs</span><span class='op'>$</span><span class='va'>p1</span> <span class='op'>-</span> <span class='va'>inputs</span><span class='op'>$</span><span class='va'>p2</span>
 <span class='op'>)</span>
-<span class='fu'>evppi.remote</span><span class='op'>(</span>outputs <span class='op'>=</span> <span class='va'>outputs_nb</span>, inputs <span class='op'>=</span> <span class='va'>inputs</span><span class='op'>)</span>
+<span class='fu'>evppivar.remote</span><span class='op'>(</span>outputs <span class='op'>=</span> <span class='va'>outputs_nb</span>, inputs <span class='op'>=</span> <span class='va'>inputs</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Calling server at https://prism.peermodelsnetwork.com/route/voi/run</span></div><div class='output co'>#&gt; <span class='error'>Error in prism_call("prism_model_run", base_url = address, model_input = model_input,     api_key = api_key): 1000</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

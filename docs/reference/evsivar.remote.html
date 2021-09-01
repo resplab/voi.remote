@@ -137,19 +137,20 @@ from a study of a certain design that informs the parameters of interest.</p>
     <pre class="usage"><span class='fu'>evsivar.remote</span><span class='op'>(</span>
   <span class='va'>outputs</span>,
   <span class='va'>inputs</span>,
-  <span class='va'>study</span>,
-  <span class='va'>datagen_fn</span>,
-  <span class='va'>pars</span>,
-  <span class='va'>n</span>,
-  <span class='va'>likelihood</span>,
-  <span class='va'>analysis_model</span>,
-  <span class='va'>analysis_options</span>,
-  <span class='va'>decision_model</span>,
-  <span class='va'>Q</span>,
-  <span class='va'>npreg_method</span>,
-  <span class='va'>nsim</span>,
-  <span class='va'>verbose</span>,
-  <span class='va'>method</span>,
+  study <span class='op'>=</span> <span class='cn'>NULL</span>,
+  datagen_fn <span class='op'>=</span> <span class='cn'>NULL</span>,
+  pars <span class='op'>=</span> <span class='cn'>NULL</span>,
+  n <span class='op'>=</span> <span class='fl'>100</span>,
+  aux_pars <span class='op'>=</span> <span class='cn'>NULL</span>,
+  method <span class='op'>=</span> <span class='cn'>NULL</span>,
+  likelihood <span class='op'>=</span> <span class='cn'>NULL</span>,
+  analysis_model <span class='op'>=</span> <span class='cn'>NULL</span>,
+  analysis_options <span class='op'>=</span> <span class='cn'>NULL</span>,
+  decision_model <span class='op'>=</span> <span class='cn'>NULL</span>,
+  Q <span class='op'>=</span> <span class='fl'>30</span>,
+  npreg_method <span class='op'>=</span> <span class='st'>"gam"</span>,
+  nsim <span class='op'>=</span> <span class='cn'>NULL</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -239,6 +240,18 @@ facilitates calculating EVSI for multiple sample sizes.  TODO if we want to
 design trials with multiple unbalanced arms, we'll need more than one argument.</p></td>
     </tr>
     <tr>
+      <th>aux_pars</th>
+      <td><p>A list of additional fixed arguments to supply to the
+function to generate the data, whether that is a built-in or user-defined
+function, e.g. <code>evsi(..., aux_pars = list(sd=2))</code> to change the fixed
+standard deviation in the <code>"normal_known"</code> model.</p></td>
+    </tr>
+    <tr>
+      <th>method</th>
+      <td><p>haracter string indicating the calculation method. The default
+methods are based on nonparametric regression.</p></td>
+    </tr>
+    <tr>
       <th>likelihood</th>
       <td><p>Likelihood function, required (and only required) for the
 importance sampling method.  This should have two arguments as follows:</p><ol>
@@ -297,11 +310,6 @@ are used.</p></td>
 help with debugging.</p></td>
     </tr>
     <tr>
-      <th>method</th>
-      <td><p>haracter string indicating the calculation method. The default
-methods are based on nonparametric regression</p></td>
-    </tr>
-    <tr>
       <th>...</th>
       <td><p>Other arguments required by specific methods</p></td>
     </tr>
@@ -327,15 +335,8 @@ methods are based on nonparametric regression</p></td>
 <span class='va'>study</span> <span class='op'>&lt;-</span> <span class='st'>'binary'</span>
 <span class='va'>pars</span> <span class='op'>&lt;-</span> <span class='st'>"p1"</span>
 <span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>10</span>,<span class='fl'>100</span>,<span class='fl'>1000</span><span class='op'>)</span>
-<span class='va'>aux_pars</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
-<span class='va'>method</span> <span class='op'>&lt;-</span>  <span class='cn'>NULL</span>
-<span class='va'>likelihood</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
-<span class='va'>analysis_model</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
-<span class='va'>analysis_options</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
-<span class='va'>decision_model</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
-<span class='va'>nsim</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
-<span class='fu'>evsivar.remote</span><span class='op'>(</span>outputs <span class='op'>=</span> <span class='va'>p2</span>, inputs <span class='op'>=</span> <span class='va'>inputs</span>, study <span class='op'>=</span> <span class='va'>study</span>, datagen_fn <span class='op'>=</span> <span class='va'>datagen_fn</span>, pars <span class='op'>=</span> <span class='va'>pars</span>, n <span class='op'>=</span> <span class='va'>n</span>, method <span class='op'>=</span> <span class='va'>method</span>, likelihood <span class='op'>=</span> <span class='va'>likelihood</span>, analysis_model <span class='op'>=</span> <span class='va'>analysis_model</span>, analysis_options <span class='op'>=</span> <span class='va'>analysis_options</span>, decision_model <span class='op'>=</span> <span class='va'>decision_model</span>, nsim <span class='op'>=</span> <span class='va'>nsim</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Calling server at https://prism.peermodelsnetwork.com/route/voi/run</span></div><div class='output co'>#&gt; <span class='error'>Error in prism_call("prism_model_run", base_url = address, model_input = model_input,     api_key = api_key): 1000</span></div><div class='input'>
+<span class='fu'>evsivar.remote</span><span class='op'>(</span>outputs <span class='op'>=</span> <span class='va'>p2</span>, inputs <span class='op'>=</span> <span class='va'>inputs</span>, datagen_fn <span class='op'>=</span> <span class='va'>datagen_fn</span>, study <span class='op'>=</span> <span class='va'>study</span>, pars <span class='op'>=</span> <span class='va'>pars</span>, n <span class='op'>=</span> <span class='va'>n</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Calling server at https://prism.peermodelsnetwork.com/route/voi/run</span></div><div class='output co'>#&gt; <span class='error'>Error in curl::curl_fetch_memory(url, handle = handle): HTTP/2 stream 0 was not closed cleanly: PROTOCOL_ERROR (err 1)</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

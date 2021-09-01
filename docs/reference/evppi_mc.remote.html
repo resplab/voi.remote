@@ -130,7 +130,16 @@ simplest of examples.  For realistically complex examples, the methods
 implemented in the <code>evppi</code> function will usually be preferred.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>evppi_mc.remote</span><span class='op'>(</span><span class='va'>model_fn</span>, <span class='va'>par_fn</span>, <span class='va'>pars</span>, <span class='va'>nouter</span>, <span class='va'>ninner</span>, <span class='va'>wtp</span>, <span class='va'>mfargs</span>, <span class='va'>verbose</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>evppi_mc.remote</span><span class='op'>(</span>
+  <span class='va'>model_fn</span>,
+  <span class='va'>par_fn</span>,
+  <span class='va'>pars</span>,
+  <span class='va'>nouter</span>,
+  <span class='va'>ninner</span>,
+  wtp <span class='op'>=</span> <span class='cn'>NULL</span>,
+  mfargs <span class='op'>=</span> <span class='cn'>NULL</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -224,10 +233,8 @@ help with debugging.</p></td>
 <span class='va'>pars</span> <span class='op'>&lt;-</span> <span class='st'>"p1"</span>
 <span class='va'>ninner</span> <span class='op'>&lt;-</span> <span class='fl'>1000</span>
 <span class='va'>nouter</span> <span class='op'>&lt;-</span> <span class='fl'>100</span>
-<span class='va'>wtp</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
-<span class='va'>mfargs</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
-<span class='fu'>evppi_mc.remote</span><span class='op'>(</span>model_fn <span class='op'>=</span> <span class='va'>model_fn</span>, par_fn <span class='op'>=</span> <span class='va'>par_fn</span>, pars <span class='op'>=</span> <span class='va'>pars</span>, nouter <span class='op'>=</span> <span class='va'>nouter</span>, ninner <span class='op'>=</span> <span class='va'>ninner</span>, wtp <span class='op'>=</span> <span class='va'>wtp</span>, mfargs <span class='op'>=</span> <span class='va'>mfargs</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in evppi_mc.remote(model_fn = model_fn, par_fn = par_fn, pars = pars,     nouter = nouter, ninner = ninner, wtp = wtp, mfargs = mfargs): object 'model_fn' not found</span></div></pre>
+<span class='fu'>evppi_mc.remote</span><span class='op'>(</span>model_fn <span class='op'>=</span> <span class='va'>model_fn</span>, par_fn <span class='op'>=</span> <span class='va'>par_fn</span>, pars <span class='op'>=</span> <span class='va'>pars</span>, nouter <span class='op'>=</span> <span class='va'>nouter</span>, ninner <span class='op'>=</span> <span class='va'>ninner</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in evppi_mc.remote(model_fn = model_fn, par_fn = par_fn, pars = pars,     nouter = nouter, ninner = ninner): object 'model_fn' not found</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
