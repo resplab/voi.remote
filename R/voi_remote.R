@@ -47,7 +47,7 @@
 #' evpi.remote(outputs = outputs_nb)
 evpi.remote <- function(outputs, nsim = NULL) {
   model_input <- list(outputs = outputs,
-                      if (!is.null(nsim)) {nsim = nsim},
+                      nsim = nsim,
                       func = "evpi")
   res <-
     peermodels::model_run(model_name = "voi", model_input, api_key = "aaHYJJb4hcrmBYY3")
@@ -160,13 +160,13 @@ evppi.remote <-
       list(
         outputs = outputs,
         inputs = inputs,
-        if (!is.null(pars)) {pars = pars},
+        pars = pars,
         se = se,
         B = B,
-        if (!is.null(nsim)) {nsim = nsim},
+        nsim = nsim,
         verbose = verbose,
         func = "evppi",
-        if (!is.null(method)) {method = method},
+        method = method,
         etc = ...
       )
     res <-
@@ -270,9 +270,9 @@ evppivar.remote <-
       list(
         outputs = outputs,
         inputs = inputs,
-        if (!is.null(pars)) {pars = pars},
-        if (!is.null(method)) {method = method},
-        if (!is.null(nsim)) {nsim = nsim},
+        pars = pars,
+        method = method,
+        nsim = nsim,
         verbose = verbose,
         func = "evppivar",
         etc = ...
@@ -385,8 +385,8 @@ evppi_mc.remote <-
         pars = pars,
         nouter = nouter,
         ninner = ninner,
-        if (!is.null(wtp)) {wtp = wtp},
-        if (!is.null(mfargs)) {mfargs = mfargs},
+        wtp = wtp,
+        mfargs = mfargs,
         verbose = verbose,
         func = "evppi_mc"
       )
@@ -577,19 +577,19 @@ evsi.remote <-
       list(
         outputs = outputs,
         inputs = inputs,
-        if (!is.null(study)) {study = study},
-        if (!is.null(datagen_fn)) {datagen_fn = datagen_fn},
-        if (!is.null(pars)) {pars = pars},
+        study = study,
+        datagen_fn = datagen_fn,
+        pars = pars,
         n = n,
-        if (!is.null(aux_pars)) {aux_pars = aux_pars},
-        if (!is.null(method)) {method = method},
-        if (!is.null(likelihood)) {likelihood = likelihood},
-        if (!is.null(analysis_model)) {analysis_model = analysis_model},
-        if (!is.null(analysis_options)) {analysis_options = analysis_options},
-        if (!is.null(decision_model)) {decision_model = decision_model},
+        aux_pars = aux_pars,
+        method = method,
+        likelihood = likelihood,
+        analysis_model = analysis_model,
+        analysis_options = analysis_options,
+        decision_model = decision_model,
         Q = Q,
         npreg_method = npreg_method,
-        if (!is.null(nsim)) {nsim = nsim},
+        nsim = nsim,
         verbose = verbose,
         func = "evsi",
         etc = ...
@@ -780,19 +780,19 @@ evsivar.remote <-
       list(
         outputs = outputs,
         inputs = inputs,
-        if (!is.null(study)) {study = study},
-        if (!is.null(datagen_fn)) {datagen_fn = datagen_fn},
-        if (!is.null(pars)) {pars = pars},
+        study = study,
+        datagen_fn = datagen_fn,
+        pars = pars,
         n = n,
-        if (!is.null(aux_pars)) {aux_pars = aux_pars},
-        if (!is.null(method)) {method = method},
-        if (!is.null(likelihood)) {likelihood = likelihood},
-        if (!is.null(analysis_model)) {analysis_model = analysis_model},
-        if (!is.null(analysis_options)) {analysis_options = analysis_options},
-        if (!is.null(decision_model)) {decision_model = decision_model},
+        aux_pars = aux_pars,
+        method = method,
+        likelihood = likelihood,
+        analysis_model = analysis_model,
+        analysis_options = analysis_options,
+        decision_model = decision_model,
         Q = Q,
         npreg_method = npreg_method,
-        if (!is.null(nsim)) {nsim = nsim},
+        nsim = nsim,
         verbose = verbose,
         func = "evsivar",
         etc = ...
