@@ -467,9 +467,8 @@ This is achieved using the function `evsivar.remote` in the `voi.remote` package
 
 -   `pars="p1"` indicates which input parameter is informed by the study, in other words, which parameter is assumed to generate the study data.
 
-```{=html}
 <!-- -->
-```
+
     evsivar.remote(p2, inputs, study = "binary", pars="p1", n=c(100,1000,10000))
 
 As the proposed sample sizes increase, the expected value of sample information informing $p_1$ converges to the EVPPI, the expected value of perfect information about $p_1$.

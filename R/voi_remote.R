@@ -47,7 +47,7 @@
 #' evpi.remote(outputs = outputs_nb)
 evpi.remote <- function(outputs, nsim = NULL) {
   model_input <- list(outputs = outputs,
-                      nsim = nsim,
+                      if (!is.null(nsim)) {nsim = nsim},
                       func = "evpi")
   res <-
     peermodels::model_run(model_name = "voi", model_input, api_key = "aaHYJJb4hcrmBYY3")
@@ -176,6 +176,113 @@ evppi.remote <-
     return(res)
   }
 
+
+#' Calculate the expected value of partial perfect information for an estimation
+#' problem.  This computes the expected reduction in variance in some quantity
+#' of interest with perfect information about a parameter or parameters of interest.
+#'
+#' @param outputs This could take one of two forms
+#'
+#'   "net benefit" form: a matrix or data frame of samples from the uncertainty
+#'   distribution of the expected net benefit.  The number of rows should equal
+#'   the number of samples, and the number of columns should equal the number
+#'   of decision options.
+#'
+#'   "cost-effectiveness analysis" form: a list with the following named
+#'   components:
+#'
+#'   \code{"c"}: a matrix or data frame of samples from the distribution of
+#'   costs.  There should be one column for each decision option.
+#'
+#'   \code{"e"}: a matrix or data frame of samples from the distribution of
+#'   effects, likewise.
+#'
+#'   \code{"k"}: a vector of willingness-to-pay values.
+#'
+#'   Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in
+#'   this "cost-effectiveness analysis" format, therefore they may be supplied as
+#'   the \code{outputs} argument.
+#'
+#'   If \code{outputs} is a matrix or data frame it is assumed to be of "net
+#'   benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
+#'   effectiveness analysis" form.
+#'
+#' @param inputs Matrix or data frame of samples from the uncertainty
+#'   distribution of the input parameters of the decision model.   The number
+#'   of columns should equal the number of parameters, and the columns should
+#'   be named.    This should have the same number of rows as there are samples
+#'   in \code{outputs}, and each row of the samples in \code{outputs} should
+#'   give the model output evaluated at the corresponding parameters.
+#'
+#' @param pars A character vector giving the parameters of interest, for which
+#'   a single EVPPI calculation is required.  If the vector has multiple
+#'   element, then the joint expected value of perfect information on all these
+#'   parameters together is calculated.
+#'
+#'   Alternatively, \code{pars} may be a list.  Multiple EVPPI calculations are
+#'   then performed, one for each component of \code{pars} defined in the above
+#'   vector form.
+#'
+#'   \code{pars} must be specified if \code{inputs} is a matrix or data frame.
+#'   This should then correspond to particular columns of \code{inputs}.    If
+#'   \code{inputs} is a vector, this is assumed to define the single parameter
+#'   of interest, then \code{pars} is not required.
+#'
+#' @param nsim Number of simulations from the model to use for calculating
+#'   EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
+#'   \code{outputs} are used.
+#'
+#' @param verbose If \code{TRUE}, then messages are printed describing each step of
+#'   the calculation, if the method supplies these.  Useful to see the progress
+#'   of slow calculations.
+#'
+#' @param method Character string indicating the calculation method. The default
+#'   methods are based on nonparametric regression
+#'
+#' @param ... Other arguments to control specific methods.
+#'
+#' @return expected reduction in variance in some quantity of interest with
+#' perfect information about a parameter or parameters of interest
+#'
+#' @export
+#'
+#' @examples
+#' set.seed(1)
+#' nsam <- 10000
+#' inputs <- data.frame(
+#'   p1 = rnorm(nsam, 1, 1),
+#'   p2 = rnorm(nsam, 0, 2)
+#' )
+#' outputs_nb <- data.frame(
+#'   t1 = 0,
+#'   t2 = inputs$p1 - inputs$p2
+#' )
+#' evppi.remote(outputs = outputs_nb, inputs = inputs)
+evppivar.remote <-
+  function(outputs,
+           inputs,
+           pars = NULL,
+           method = NULL,
+           nsim = NULL,
+           verbose = TRUE,
+           ...) {
+    model_input <-
+      list(
+        outputs = outputs,
+        inputs = inputs,
+        pars = pars,
+        method = method,
+        nsim = nsim,
+        verbose = verbose,
+        func = "evppivar",
+        etc = ...
+      )
+    res <-
+      peermodels::model_run(model_name = "voi",
+                            model_input = model_input,
+                            api_key = "aaHYJJb4hcrmBYY3")
+    return(res)
+  }
 
 
 #' Traditional two-level Monte Carlo estimator of EVPPI.
@@ -370,6 +477,14 @@ evppi_mc.remote <-
 #' facilitates calculating EVSI for multiple sample sizes.  TODO if we want to
 #' design trials with multiple unbalanced arms, we'll need more than one argument.
 #'
+#' @param aux_pars A list of additional fixed arguments to supply to the
+#' function to generate the data, whether that is a built-in or user-defined
+#' function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the fixed
+#' standard deviation in the \code{"normal_known"} model.
+#'
+#' @param method haracter string indicating the calculation method. The default
+#' methods are based on nonparametric regression.
+#'
 #' @param likelihood Likelihood function, required (and only required) for the
 #' importance sampling method.  This should have two arguments as follows:
 #'
@@ -415,9 +530,6 @@ evppi_mc.remote <-
 #' @param verbose Set to \code{TRUE} to print some additional messages to
 #' help with debugging.
 #'
-#' @param method haracter string indicating the calculation method. The default
-#'   methods are based on nonparametric regression
-#'
 #' @param ... Other arguments required by specific methods
 #'
 #' @return
@@ -450,6 +562,8 @@ evsi.remote <-
            datagen_fn = NULL,
            pars = NULL,
            n = 100,
+           aux_pars = NULL,
+           method = NULL,
            likelihood = NULL,
            analysis_model = NULL,
            analysis_options = NULL,
@@ -458,7 +572,6 @@ evsi.remote <-
            npreg_method = "gam",
            nsim = NULL,
            verbose = FALSE,
-           method = NULL,
            ...) {
     model_input <-
       list(
@@ -468,6 +581,8 @@ evsi.remote <-
         datagen_fn = datagen_fn,
         pars = pars,
         n = n,
+        aux_pars = aux_pars,
+        method = method,
         likelihood = likelihood,
         analysis_model = analysis_model,
         analysis_options = analysis_options,
@@ -477,7 +592,6 @@ evsi.remote <-
         nsim = nsim,
         verbose = verbose,
         func = "evsi",
-        method = method,
         etc = ...
       )
     res <-
@@ -569,6 +683,14 @@ evsi.remote <-
 #' facilitates calculating EVSI for multiple sample sizes.  TODO if we want to
 #' design trials with multiple unbalanced arms, we'll need more than one argument.
 #'
+#' @param aux_pars A list of additional fixed arguments to supply to the
+#' function to generate the data, whether that is a built-in or user-defined
+#' function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the fixed
+#' standard deviation in the \code{"normal_known"} model.
+#'
+#' @param method haracter string indicating the calculation method. The default
+#' methods are based on nonparametric regression.
+#'
 #' @param likelihood Likelihood function, required (and only required) for the
 #' importance sampling method.  This should have two arguments as follows:
 #'
@@ -614,10 +736,6 @@ evsi.remote <-
 #' @param verbose Set to \code{TRUE} to print some additional messages to
 #' help with debugging.
 #'
-#' @param method haracter string indicating the calculation method. The default
-#'   methods are based on nonparametric regression
-
-#'
 #' @param ... Other arguments required by specific methods
 #'
 #' @return
@@ -637,14 +755,7 @@ evsi.remote <-
 #' study <- 'binary'
 #' pars <- "p1"
 #' n <- c(10,100,1000)
-#' aux_pars <- NULL
-#' method <-  NULL
-#' likelihood <- NULL
-#' analysis_model <- NULL
-#' analysis_options <- NULL
-#' decision_model <- NULL
-#' nsim <- NULL
-#' evsivar.remote(outputs = p2, inputs = inputs, study = study, datagen_fn = datagen_fn, pars = pars, n = n, method = method, likelihood = likelihood, analysis_model = analysis_model, analysis_options = analysis_options, decision_model = decision_model, nsim = nsim)
+#' evsivar.remote(outputs = p2, inputs = inputs, datagen_fn = datagen_fn, study = study, pars = pars, n = n)
 #'
 evsivar.remote <-
   function(outputs,
@@ -653,6 +764,8 @@ evsivar.remote <-
            datagen_fn = NULL,
            pars = NULL,
            n = 100,
+           aux_pars = NULL,
+           method = NULL,
            likelihood = NULL,
            analysis_model = NULL,
            analysis_options = NULL,
@@ -661,7 +774,7 @@ evsivar.remote <-
            npreg_method = "gam",
            nsim = NULL,
            verbose = TRUE,
-           method = NULL,
+
            ...) {
     model_input <-
       list(
@@ -671,6 +784,8 @@ evsivar.remote <-
         datagen_fn = datagen_fn,
         pars = pars,
         n = n,
+        aux_pars = aux_pars,
+        method = method,
         likelihood = likelihood,
         analysis_model = analysis_model,
         analysis_options = analysis_options,
@@ -680,7 +795,6 @@ evsivar.remote <-
         nsim = nsim,
         verbose = verbose,
         func = "evsivar",
-        method = method,
         etc = ...
       )
     res <-
