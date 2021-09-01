@@ -150,10 +150,10 @@ evppi.remote <-
   function(outputs,
            inputs,
            pars = NULL,
-           se = FALSE,
-           B = 500,
+           se = NULL,
+           B = NULL,
            nsim = NULL,
-           verbose = FALSE,
+           verbose = NULL,
            method = NULL,
            ...) {
     model_input <-
@@ -161,10 +161,10 @@ evppi.remote <-
         outputs = outputs,
         inputs = inputs,
         if (!is.null(pars)) {pars = pars},
-        se = se,
-        B = B,
+        if (!is.null(se)) {se = se},
+        if (!is.null(B)) {B = B},
         if (!is.null(nsim)) {nsim = nsim},
-        verbose = verbose,
+        if (!is.null(verbose)) {verbose = verbose},
         func = "evppi",
         if (!is.null(method)) {method = method},
         etc = ...
