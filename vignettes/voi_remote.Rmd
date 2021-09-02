@@ -7,7 +7,7 @@ output:
     toc: true
 vignette: >
  \usepackage[utf8]{inputenc}
- %\VignetteIndexEntry{voi for Value of Information calculation: package overview}
+ %\VignetteIndexEntry{voi.remote for Value of Information calculation: package overview}
  %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console

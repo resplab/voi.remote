@@ -330,7 +330,12 @@ help with debugging.</p></td>
 <span class='va'>pars</span> <span class='op'>&lt;-</span> <span class='st'>"p1"</span>
 <span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>10</span>,<span class='fl'>100</span>,<span class='fl'>1000</span><span class='op'>)</span>
 <span class='fu'>evsi.remote</span><span class='op'>(</span>outputs <span class='op'>=</span> <span class='va'>outputs_nb</span>, inputs <span class='op'>=</span> <span class='va'>inputs</span>, datagen_fn <span class='op'>=</span> <span class='va'>datagen_normal</span>, pars <span class='op'>=</span> <span class='va'>pars</span>, n <span class='op'>=</span> <span class='va'>n</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Calling server at https://prism.peermodelsnetwork.com/route/voi/run</span></div><div class='output co'>#&gt; <span class='error'>Error in curl::curl_fetch_memory(url, handle = handle): HTTP/2 stream 0 was not closed cleanly: PROTOCOL_ERROR (err 1)</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='message'>Calling server at https://prism.peermodelsnetwork.com/route/voi/run</span></div><div class='output co'>#&gt; $n
+#&gt; [1]   10  100 1000
+#&gt; 
+#&gt; $evsi
+#&gt; [1] 0.0748 0.0816 0.0821
+#&gt; </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
