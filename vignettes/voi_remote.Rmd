@@ -1,13 +1,13 @@
 ---
-title: 'voi.remote for Value of Information calculatio - based on Chris Jackson's VoI package'
-author: "[XXX Eric and William"
+title: "voi.remote for Value of Information calculatio - based on Chris Jackson's VoI package"
+author: "Eric and William"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
     toc: true
 vignette: >
  \usepackage[utf8]{inputenc}
- %\VignetteIndexEntry{voi.remote for Value of Information calculatio - based on Chris Jackson's VoI package}
+ %\VignetteIndexEntry{voi.remote for Value of Information calculation - based on Chris Jackson's VoI package}
  %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
@@ -17,8 +17,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This document is heavily based on the VoI vignette written by Christopher Jackson, and is meant to show the compatiblity of the voi.remote packae with the original voi package. The `voi.remote` package has the exact same functionalities as `voi` package, but  allows users to run all the VoI functions on the server rather than running locally.
-
+This document is heavily based on the VoI vignette written by Christopher Jackson, and is meant to show the compatiblity of the voi.remote packae with the original voi package. The `voi.remote` package has the exact same functionalities as `voi` package, but allows users to run all the VoI functions on the server rather than running locally.
 
 ### Specifying model inputs (same as voi package)
 
@@ -31,11 +30,12 @@ inputs <- data.frame(p1 = rnorm(nsam, 1, 1),
                      p2 = rnorm(nsam, 0, 2))
 ```
 
-### Specifying model outputs 
-
-
+### Specifying model outputs
 
 ```{r}
+outputs_nb <- data.frame(t1 = 0, 
+                         t2 = inputs$p1 - inputs$p2)
+
 outputs_cea <- list( 
   e = data.frame(t1 = 0, t2 = inputs$p1), 
   c = data.frame(t1 = 0, t2 = inputs$p2), 
@@ -43,11 +43,9 @@ outputs_cea <- list(
 )
 ```
 
-
 ## Expected value of perfect information
 
 #### Computation using random sampling
-
 
 ```{r}
 decision_current <- 2
@@ -56,7 +54,6 @@ decision_perfect <- ifelse(outputs_nb$t2 < 0, 1, 2)
 nb_perfect <- ifelse(decision_perfect == 1, 0, outputs_nb$t2)
 (evpi1 <- mean(nb_perfect) - nb_current)
 ```
-
 
 ```{r}
 opp_loss <- nb_perfect - nb_current
@@ -71,16 +68,16 @@ The `voi.remote` package contains a simple function `evpi.remote` to compute the
 library(voi.remote)
 ```
 
-    evpi.remote(outputs_nb)
-    evpi.remote(outputs_cea)
+```{r}
+evpi.remote(outputs_nb)
+evpi.remote(outputs_cea)
+```
 
 #### Analytic computation
 
 ```{r}
 prob_correct <- 1 - pnorm(0, 1, sqrt(5))
 ```
-
-
 
 ```{r}
 mean_truncnorm <- function(mu, sig, lower=-Inf, upper=Inf){ 
@@ -95,34 +92,42 @@ mean_nb_perfect <- enb_correct * prob_correct
 
 ## Expected value of partial perfect information
 
-
 The function `evppi.remote` can be used to compute this, similar to the evpi function (which is called on the server).
 
 ### Invoking the `evppi.remote` function.
 
-**(a) As a vector**. 
+**(a) As a vector**.
 
-    evppi.remote(outputs_nb, inputs, pars=c("p1","p2"))
+```{r}
+evppi.remote(outputs_nb, inputs, pars=c("p1","p2"))
+```
 
-**(b) As a list**. 
+**(b) As a list**.
 
-    evppi.remote(outputs_nb, inputs, pars=list("p1",c("p1","p2")))
-    evppi.remote(outputs_cea, inputs, pars=list("p1",c("p1","p2")))
+```{r}
+evppi.remote(outputs_nb, inputs, pars=list("p1",c("p1","p2")))
+evppi.remote(outputs_cea, inputs, pars=list("p1",c("p1","p2")))
+```
 
 The `evppi.remote` function returns a data frame with columns indicating the parameter (or parameters), and the corresponding EVPPI. If the outputs are in cost-effectiveness analysis format, then a separate column is returned indicating the willingness-to-pay.
 
-    evppi.remote(outputs_cea, inputs, pars=list("p1",c("p1","p2")))
+```{r}
+evppi.remote(outputs_cea, inputs, pars=list("p1",c("p1","p2")))
+```
 
 ### Changing the default calculation method
 
 #### Gaussian process regression
 
-
-    evppi.remote(outputs_nb, inputs, pars="p1", method="gp", nsim=1000)
+```{r}
+evppi.remote(outputs_nb, inputs, pars="p1", method="gp", nsim=1000)
+```
 
 #### Multivariate adaptive regression splines
 
+```{r}
     evppi.remote(outputs_nb, inputs, pars="p1", method="earth")
+```
 
 #### INLA method
 
@@ -132,33 +137,35 @@ install.packages('splancs')
 devtools::install_version("ldr", version = "1.3.3", repos = "http://cran.uk.r-project.org")
 ```
 
-    evppi.remote(outputs_nb, inputs, pars=c("p1","p2"), method="inla")
+```{r, eval=FALSE}
+evppi.remote(outputs_nb, inputs, pars=c("p1","p2"), method="inla")
+```
 
 #### Tuning the generalized additive model method
 
+```{r}
+evppi.remote(outputs_nb, inputs, pars=c("p1","p2"), method="gam", gam_formula="s(p1) + s(p2)")
 
-    evppi.remote(outputs_nb, inputs, pars=c("p1","p2"), method="gam", gam_formula="s(p1) + s(p2)")
-
-    evppi.remote(outputs_nb, inputs, pars="p1", se=TRUE, B=100)
+evppi.remote(outputs_nb, inputs, pars="p1", se=TRUE, B=100)
+```
 
 #### Single-parameter methods
 
-    evppi.remote(outputs_nb, inputs, pars="p1", n.blocks=20, method="so")
+```{r}
+evppi.remote(outputs_nb, inputs, pars="p1", n.blocks=20, method="so")
 
-    evppi.remote(outputs_nb, inputs, pars="p1", method="sal")
+evppi.remote(outputs_nb, inputs, pars="p1", method="sal")
+```
 
 ### Traditional Monte Carlo nested loop method
 
-
 #### Model evaluation function
-
 
 ```{r}
 model_fn_nb <- function(p1, p2){ 
   c(0, p1 - p2) 
 }
 ```
-
 
 ```{r}
 model_fn_cea <- function(p1, p2){ 
@@ -169,7 +176,6 @@ model_fn_cea <- function(p1, p2){
 
 #### Parameter simulation function
 
-
 ```{r}
 par_fn <- function(n){
   data.frame(p1 = rnorm(n, 1, 1),
@@ -178,61 +184,57 @@ par_fn <- function(n){
 ```
 
 #### Invoking `evppi_mc.remote`
-
-    evppi_mc.remote(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)
+```{r}
+evppi_mc.remote(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)
+```
 
 #### Accounting for parameter correlation
-
-    par_fn_corr <- function(n, p1=NULL){
-      p1_new <- if (is.null(p1)) rnorm(n, 1, 1) else p1
-      data.frame(p1 = p1_new,
-                 p2 = rnorm(n, p1_new, 2))
-    }
-    evppi_mc.remote(model_fn_nb, par_fn_corr, pars="p1", ninner=1000, nouter=100)
-
+```{r}
+par_fn_corr <- function(n, p1=NULL){
+  p1_new <- if (is.null(p1)) rnorm(n, 1, 1) else p1
+  data.frame(p1 = p1_new,
+             p2 = rnorm(n, p1_new, 2))
+}
+evppi_mc.remote(model_fn_nb, par_fn_corr, pars="p1", ninner=1000, nouter=100)
+```
 ## Expected value of sample information
 
-
 ### Function to generate study data
+```{r}
+datagen_normal <- function(inputs, n=100, sd=1){
+  data.frame(xbar = rnorm(n = nrow(inputs),
+                          mean = inputs[,"p1"],
+                          sd = sd / sqrt(n)))
+}
 
-
-    datagen_normal <- function(inputs, n=100, sd=1){
-      data.frame(xbar = rnorm(n = nrow(inputs),
-                              mean = inputs[,"p1"],
-                              sd = sd / sqrt(n)))
-    }
-
-    set.seed(1)
-    evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, n=c(10,100,1000))
+set.seed(1)
+evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, n=c(10,100,1000))
+```
 
 ### Built-in study designs
+```{r}
+evsi.remote(outputs_nb, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
+evsi.remote(outputs_cea, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
+```
 
-    evsi.remote(outputs_nb, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
-    evsi.remote(outputs_cea, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
-    
 ### Importance sampling method
-
-
-    likelihood_normal <- function(Y, inputs, n=100, sig=1){
-      mu <- inputs[,"p1"]
-      dnorm(Y[,"xbar"], mu, sig/sqrt(n))
-    }
-
-    evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, likelihood = likelihood_normal, 
-                n=100, pars = "p1", method="is", nsim=1000)
-
-
-    evsi.remote(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1", method="is", nsim=1000)
-
+```{r}
+likelihood_normal <- function(Y, inputs, n=100, sig=1){
+  mu <- inputs[,"p1"]
+  dnorm(Y[,"xbar"], mu, sig/sqrt(n))
+}
+evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, likelihood = likelihood_normal, 
+            n=100, pars = "p1", method="is", nsim=1000)
+evsi.remote(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1", method="is", nsim=1000)
+```
 ### Further work
 
-
 ## Value of Information in models for estimation
-
 
 ```{r}
 p1 <- rbeta(10000, 5, 95)
 ```
+
 $$p_2 = expit(logit(p_1) + \beta)$$.
 
 ```{r}
@@ -250,18 +252,18 @@ legend("topright", col=c("black","red"), lwd=c(2,2),
 var(p2)
 ```
 
-    inputs <- data.frame(p1, beta)
-    (evppi_beta <- evppivar.remote(p2, inputs, par="beta"))
-    (evppi_p1 <- evppivar.remote(p2, inputs, par="p1"))
+```{r}
+inputs <- data.frame(p1, beta)
+(evppi_beta <- evppivar.remote(p2, inputs, pars="beta"))
+(evppi_p1 <- evppivar.remote(p2, inputs, pars="p1"))
 
 
-    sqrt(var(p2)) # or sd(p2)
-    sqrt(var(p2) - evppi_beta$evppi)
-    sqrt(var(p2) - evppi_p1$evppi)
-
+sqrt(var(p2)) # or sd(p2)
+sqrt(var(p2) - evppi_beta$evppi)
+sqrt(var(p2) - evppi_p1$evppi)
+```
 
 ### How regression-based EVPPI estimation works
-
 
 ```{r}
 plot(x=p1, y=p2, pch=".")
@@ -270,23 +272,22 @@ p1fit <- fitted(mod)
 lines(sort(p1), p1fit[order(p1)], col="blue")
 ```
 
-    p1res <- p2 - p1fit
-    var(p2) - var(p1res)
-
-
+```{r}
+p1res <- p2 - p1fit
+var(p2) - var(p1res)
+```
 
 $$var(Y) - E_{X}\left[var_{Y| X}(Y |X)\right] = var_{X} \left[E_{Y|X}(Y|X)\right]$$
-
-    var(p1fit)
+```{r}
+var(p1fit)
+```
 
 ### EVSI for estimation
 
+```{r}
+evsivar.remote(p2, inputs, study = "binary", pars="p1", n=c(100,1000,10000))
 
 
-    evsivar.remote(p2, inputs, study = "binary", pars="p1", n=c(100,1000,10000))
-
-
-    inputs_p2 = data.frame(p2 = p2)
-    evsivar.remote(p2, inputs=inputs_p2, study = "binary", pars="p2", n=c(100, 1000, 10000))
-
-
+inputs_p2 = data.frame(p2 = p2)
+evsivar.remote(p2, inputs=inputs_p2, study = "binary", pars="p2", n=c(100, 1000, 10000))
+```
