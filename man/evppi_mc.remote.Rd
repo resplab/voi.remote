@@ -95,8 +95,5 @@ par_fn <- function(n) {
     p2 = rnorm(n, 0, 2)
   )
 }
-pars <- "p1"
-ninner <- 1000
-nouter <- 100
-evppi_mc.remote(model_fn = model_fn, par_fn = par_fn, pars = pars, nouter = nouter, ninner = ninner)
+evppi_mc.remote(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)
 }

@@ -174,13 +174,11 @@ outputs_nb <- data.frame(
   t1 = 0,
   t2 = inputs$p1 - inputs$p2
 )
-datagen_normal <- function(inputs, n=100, sd=1){
-   data.frame(xbar = rnorm(n = nrow(inputs),
-                           mean = inputs[,"p1"],
-                           sd = sd / sqrt(n)))
-}
-pars <- "p1"
-n <- c(10,100,1000)
-evsi.remote(outputs = outputs_nb, inputs = inputs, datagen_fn = datagen_normal, pars = pars, n = n)
 
+datagen_normal <- function(inputs, n=100, sd=1){
+data.frame(xbar = rnorm(n = nrow(inputs),
+                       mean = inputs[,"p1"],
+                       sd = sd / sqrt(n)))
+}
+evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, n=c(10,100,1000))
 }

@@ -200,7 +200,7 @@ devtools::install_version("ldr", version = "1.3.3", repos = "http://cran.uk.r-pr
 
 It is only applicable to calculating the multiparameter EVPPI for 2 or more parameters. FIXME why doesn't it work in this example?
 
-    model_run(model_name="voi", api_key=<your_api_key>, model_input = list(outputs = outputs_nb, inputs = inputs, pars=c("p1","p2"), func="evppi", method="inla"))
+    evppi.remote(outputs_nb, inputs, pars=c("p1","p2"), method="inla")
 
 #### Tuning the generalized additive model method
 

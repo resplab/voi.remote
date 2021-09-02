@@ -107,5 +107,5 @@ outputs_nb <- data.frame(
   t1 = 0,
   t2 = inputs$p1 - inputs$p2
 )
-evppi.remote(outputs = outputs_nb, inputs = inputs)
+evppi.remote(outputs_nb, inputs, pars="p1")
 }

@@ -87,15 +87,9 @@ problem.  This computes the expected reduction in variance in some quantity
 of interest with perfect information about a parameter or parameters of interest.
 }
 \examples{
-set.seed(1)
-nsam <- 10000
-inputs <- data.frame(
-  p1 = rnorm(nsam, 1, 1),
-  p2 = rnorm(nsam, 0, 2)
-)
-outputs_nb <- data.frame(
-  t1 = 0,
-  t2 = inputs$p1 - inputs$p2
-)
-evppivar.remote(outputs = outputs_nb, inputs = inputs)
+p1 <- rbeta(10000, 5, 95)
+beta <- rnorm(10000, 0.8, 0.4)
+p2 <- plogis(qlogis(p1) + beta)
+inputs <- data.frame(p1, beta)
+evppivar.remote(p2, inputs, par="p1")
 }

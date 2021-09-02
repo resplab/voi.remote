@@ -145,7 +145,7 @@ evpi.remote <- function(outputs, nsim = NULL) {
 #'   t1 = 0,
 #'   t2 = inputs$p1 - inputs$p2
 #' )
-#' evppi.remote(outputs = outputs_nb, inputs = inputs)
+#' evppi.remote(outputs_nb, inputs, pars="p1")
 evppi.remote <-
   function(outputs,
            inputs,
@@ -247,17 +247,11 @@ evppi.remote <-
 #' @export
 #'
 #' @examples
-#' set.seed(1)
-#' nsam <- 10000
-#' inputs <- data.frame(
-#'   p1 = rnorm(nsam, 1, 1),
-#'   p2 = rnorm(nsam, 0, 2)
-#' )
-#' outputs_nb <- data.frame(
-#'   t1 = 0,
-#'   t2 = inputs$p1 - inputs$p2
-#' )
-#' evppivar.remote(outputs = outputs_nb, inputs = inputs)
+#' p1 <- rbeta(10000, 5, 95)
+#' beta <- rnorm(10000, 0.8, 0.4)
+#' p2 <- plogis(qlogis(p1) + beta)
+#' inputs <- data.frame(p1, beta)
+#' evppivar.remote(p2, inputs, par="p1")
 evppivar.remote <-
   function(outputs,
            inputs,
@@ -365,10 +359,7 @@ evppivar.remote <-
 #'     p2 = rnorm(n, 0, 2)
 #'   )
 #' }
-#' pars <- "p1"
-#' ninner <- 1000
-#' nouter <- 100
-#' evppi_mc.remote(model_fn = model_fn, par_fn = par_fn, pars = pars, nouter = nouter, ninner = ninner)
+#' evppi_mc.remote(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)
 evppi_mc.remote <-
   function(model_fn,
            par_fn,
@@ -546,15 +537,13 @@ evppi_mc.remote <-
 #'   t1 = 0,
 #'   t2 = inputs$p1 - inputs$p2
 #' )
-#' datagen_normal <- function(inputs, n=100, sd=1){
-#'    data.frame(xbar = rnorm(n = nrow(inputs),
-#'                            mean = inputs[,"p1"],
-#'                            sd = sd / sqrt(n)))
-#'}
-#' pars <- "p1"
-#' n <- c(10,100,1000)
-#' evsi.remote(outputs = outputs_nb, inputs = inputs, datagen_fn = datagen_normal, pars = pars, n = n)
 #'
+#' datagen_normal <- function(inputs, n=100, sd=1){
+#' data.frame(xbar = rnorm(n = nrow(inputs),
+#'                        mean = inputs[,"p1"],
+#'                        sd = sd / sqrt(n)))
+#' }
+#' evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, n=c(10,100,1000))
 evsi.remote <-
   function(outputs,
            inputs,
@@ -742,21 +731,11 @@ evsi.remote <-
 #' @export
 #'
 #' @examples
-#' set.seed(1)
-#' nsam <- 10000
-#' inputs <- data.frame(
-#'   p1 = rnorm(nsam, 1, 1),
-#'   p2 = rnorm(nsam, 0, 2)
-#' )
 #' p1 <- rbeta(10000, 5, 95)
 #' beta <- rnorm(10000, 0.8, 0.4)
 #' p2 <- plogis(qlogis(p1) + beta)
-#' datagen_fn <- NULL
-#' study <- 'binary'
-#' pars <- "p1"
-#' n <- c(10,100,1000)
-#' evsivar.remote(outputs = p2, inputs = inputs, datagen_fn = datagen_fn, study = study, pars = pars, n = n)
-#'
+#' inputs <- data.frame(p1, beta)
+#' evsivar.remote(p2, inputs, study = "binary", pars="p1", n=c(100,1000,10000))
 evsivar.remote <-
   function(outputs,
            inputs,
