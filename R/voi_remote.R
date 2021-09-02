@@ -275,7 +275,7 @@ evppivar.remote <-
         nsim = nsim,
         verbose = verbose,
         func = "evppivar",
-        etc = ...
+        etc = list(...)
       )
     res <-
       peermodels::model_run(model_name = "voi",
@@ -592,7 +592,7 @@ evsi.remote <-
         nsim = nsim,
         verbose = verbose,
         func = "evsi",
-        etc = ...
+        etc = list(...)
       )
     res <-
       peermodels::model_run(model_name = "voi", model_input, api_key = "aaHYJJb4hcrmBYY3")
@@ -774,7 +774,6 @@ evsivar.remote <-
            npreg_method = "gam",
            nsim = NULL,
            verbose = TRUE,
-
            ...) {
     model_input <-
       list(
@@ -795,7 +794,7 @@ evsivar.remote <-
         nsim = nsim,
         verbose = verbose,
         func = "evsivar",
-        etc = ...
+        etc = list(...)
       )
     res <-
       peermodels::model_run(model_name = "voi", model_input, api_key = "aaHYJJb4hcrmBYY3")
