@@ -2,18 +2,14 @@ Package: voi.remote
 Title: voi_remote
 Version: 0.0.0.9000
 Authors@R: 
-    c(person(given = "Christopher",
-           family = "Jackson",
+    c(person(given = "William",
+           family = "Xu",
            role = c("aut", "cre"),
-           email = "chris.jackson@mrc-bsu.cam.ac.uk"),
-	   person(given = "Anna",
-	   family = "Heath",
-	   role = c("aut"), 
-	   email = "anna.heath@sickkids.ca"),
-	   person(given = "Gianluca",
-	   family = "Baio",
-	   role = c("ctb"), 
-	   email = "g.baio@ucl.ac.uk"))
+           email = "yihangxu001@hotmail.com"),
+	   person(given = "Eric",
+	   family = "Yu",
+	   role = c(""aut", "cre""), 
+	   email = "eric.yu@usask.ca"))
 Description: A remote package that runs Christopher Jackson's voi on peermodels server.
 License: GPL-3
 Encoding: UTF-8
