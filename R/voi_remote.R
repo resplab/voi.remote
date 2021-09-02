@@ -167,7 +167,7 @@ evppi.remote <-
         verbose = verbose,
         func = "evppi",
         method = method,
-        etc = ...
+        etc = list(...)
       )
     res <-
       peermodels::model_run(model_name = "voi",
