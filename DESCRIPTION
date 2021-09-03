@@ -6,10 +6,10 @@ Authors@R:
            family = "Xu",
            role = c("aut", "cre"),
            email = "yihangxu001@hotmail.com"),
-	   person(given = "Eric",
-	   family = "Yu",
-	   role = c(""aut", "cre""), 
-	   email = "eric.yu@usask.ca"))
+	    person(given = "Eric",
+	    family = "Yu",
+	    role = c("aut"), 
+	    email = "eric.yu@usask.ca"))
 Description: A remote package that runs Christopher Jackson's voi on peermodels server.
 License: GPL-3
 Encoding: UTF-8
