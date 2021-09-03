@@ -132,12 +132,6 @@ evppi.remote(outputs_nb, inputs, pars="p1", method="gp", nsim=1000)
 #### INLA method
 
 ```{r, eval=FALSE}
-install.packages('INLA', repos='https://inla.r-inla-download.org/R/stable')
-install.packages('splancs')
-devtools::install_version("ldr", version = "1.3.3", repos = "http://cran.uk.r-project.org")
-```
-
-```{r, eval=FALSE}
 evppi.remote(outputs_nb, inputs, pars=c("p1","p2"), method="inla")
 ```
 
