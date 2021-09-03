@@ -8,7 +8,7 @@
 [![R-CMD-check](https://github.com/resplab/voi.remote/workflows/R-CMD-check/badge.svg)](https://github.com/resplab/voi.remote/actions)
 <!-- badges: end -->
 
-Value of Information methods are a decision-theoretic framework for estimating the expected value of getting more information of particular kinds, in scientific problems based on combining one or more sources of data. The goal of voi.remote is to allow users to run all the VoI functions on the server conveniently.
+The voi.remote package has the exact same functionalities as voi package, but allows users to run all the VoI functions on the server conveniently.
 
 ## Installation
 
