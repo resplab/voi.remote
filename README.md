@@ -22,4 +22,5 @@ remotes::install_github("resplab/voi.remote")
 
 ## User guide 
 
-[`voi` for Value of Information calculation: package overview](https://resplab.github.io/voi.remote/articles/voi_remote.html)
+The link below directs to the vignette for voi.remote for Value of Information calculation. It provides guide and examples on how to use the voi.remote package which is based on Chris Jackson's VoI package.
+[`voi.remote` for Value of Information calculation: package overview](https://resplab.github.io/voi.remote/articles/voi_remote.html)
