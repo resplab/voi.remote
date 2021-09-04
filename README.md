@@ -15,10 +15,9 @@ The voi.remote package has the exact same functionalities as voi package, but al
 You can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
 # install.packages("remotes")
 # remotes::install_github("resplab/peermodels")
-devtools::install_github("resplab/voi.remote")
+remotes::install_github("resplab/voi.remote")
 ```
 
 ## User guide 
