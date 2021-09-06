@@ -1,6 +1,6 @@
 ---
 title: "voi.remote for Value of Information calculation - based on Chris Jackson's VoI package"
-author: "Eric Yu, William Xu"
+author: "Eric Yu, Yihang Xu"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:

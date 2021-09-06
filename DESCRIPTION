@@ -2,7 +2,7 @@ Package: voi.remote
 Title: voi_remote
 Version: 0.0.0.9000
 Authors@R: 
-    c(person(given = "William",
+    c(person(given = "Yihang",
            family = "Xu",
            role = c("aut", "cre"),
            email = "yihangxu001@hotmail.com"),
