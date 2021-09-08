@@ -16,7 +16,6 @@ You can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes")
-# remotes::install_github("resplab/peermodels")
 remotes::install_github("resplab/voi.remote")
 ```
 

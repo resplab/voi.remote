@@ -19,6 +19,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This document is heavily based on the VoI vignette written by Christopher Jackson, and is meant to show the compatiblity of the voi.remote packae with the original voi package. The `voi.remote` package has the exact same functionalities as `voi` package, but allows users to run all the VoI functions on the server rather than running locally.
 
+### Package installation
+
+The development version of `voi.remote` can be installed from GitHub with:
+
+```
+install.packages("remotes")
+remotes::install_github("resplab/voi.remote")
+```
+
 ### Specifying model inputs (same as voi package)
 
 The inputs should be a data frame with one column per parameter and one row per random sample.
@@ -178,11 +187,13 @@ par_fn <- function(n){
 ```
 
 #### Invoking `evppi_mc.remote`
+
 ```{r}
 evppi_mc.remote(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)
 ```
 
 #### Accounting for parameter correlation
+
 ```{r}
 par_fn_corr <- function(n, p1=NULL){
   p1_new <- if (is.null(p1)) rnorm(n, 1, 1) else p1
@@ -191,9 +202,11 @@ par_fn_corr <- function(n, p1=NULL){
 }
 evppi_mc.remote(model_fn_nb, par_fn_corr, pars="p1", ninner=1000, nouter=100)
 ```
+
 ## Expected value of sample information
 
 ### Function to generate study data
+
 ```{r}
 datagen_normal <- function(inputs, n=100, sd=1){
   data.frame(xbar = rnorm(n = nrow(inputs),
@@ -206,12 +219,14 @@ evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, n=c(10,100,1000))
 ```
 
 ### Built-in study designs
+
 ```{r}
 evsi.remote(outputs_nb, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
 evsi.remote(outputs_cea, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
 ```
 
 ### Importance sampling method
+
 ```{r}
 likelihood_normal <- function(Y, inputs, n=100, sig=1){
   mu <- inputs[,"p1"]
@@ -221,6 +236,7 @@ evsi.remote(outputs_nb, inputs, datagen_fn = datagen_normal, likelihood = likeli
             n=100, pars = "p1", method="is", nsim=1000)
 evsi.remote(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1", method="is", nsim=1000)
 ```
+
 ### Further work
 
 ## Value of Information in models for estimation
@@ -272,6 +288,7 @@ var(p2) - var(p1res)
 ```
 
 $$var(Y) - E_{X}\left[var_{Y| X}(Y |X)\right] = var_{X} \left[E_{Y|X}(Y|X)\right]$$
+
 ```{r}
 var(p1fit)
 ```
