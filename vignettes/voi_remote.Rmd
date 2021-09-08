@@ -17,7 +17,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This document is heavily based on the VoI vignette written by Christopher Jackson, and is meant to show the compatiblity of the voi.remote packae with the original voi package. The `voi.remote` package has the exact same functionalities as `voi` package, but allows users to run all the VoI functions on the server rather than running locally.
+This document is heavily based on the VoI vignette written by Christopher Jackson  (https://chjackson.github.io/voi/articles/voi.html), and is meant to show the compatiblity of the voi.remote packae with the original voi package. The `voi.remote` package has the exact same functionalities as `voi` package, but allows users to run all the VoI functions on the server rather than running locally. The code chunks below were originally created by Christopher Jackson in the vignette and are provided here to show the remote functionalities that the voi.remote package provides. 
 
 ### Package installation
 
