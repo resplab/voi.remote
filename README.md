@@ -8,7 +8,7 @@
 [![R-CMD-check](https://github.com/resplab/voi.remote/workflows/R-CMD-check/badge.svg)](https://github.com/resplab/voi.remote/actions)
 <!-- badges: end -->
 
-The voi.remote package enables remote access to the voi package (https://github.com/chjackson/voi). The goal is to provide a '.remote' equivalent for each voi function in the voi package, with the same format for arguments and returned value. Note that both packages are under develoment and things can change. 
+The voi.remote package enables remote access to the voi package (https://github.com/chjackson/voi). The goal is to provide a '.remote' equivalent for each voi function in the voi package, with the same format for arguments and returned objects. Note that both packages are under develoment and things can change. 
 
 ## Installation
 
